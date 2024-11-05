@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // For rating bar
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FavoriteItemsPage extends StatelessWidget {
+import '../../providers/favorites_provider.dart'; // For rating bar
+
+class FavoriteItemsPage extends ConsumerWidget {
   final List<Map<String, dynamic>> favoriteItems = [
     {
       'title': 'Vintage Leather Bag',
@@ -27,7 +30,8 @@ class FavoriteItemsPage extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context , WidgetRef ref) {
+    final favoriteBooks = ref.watch(favoriteBooksProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text('Favorite Items'),
@@ -44,7 +48,7 @@ class FavoriteItemsPage extends StatelessWidget {
             childAspectRatio: 0.7, // Adjust for item size
           ),
           itemBuilder: (context, index) {
-            final item = favoriteItems[index];
+            final book = favoriteBooks[index];
             return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -60,7 +64,7 @@ class FavoriteItemsPage extends StatelessWidget {
                       topRight: Radius.circular(16),
                     ),
                     child: Image.network(
-                      item['imageUrl'],
+                      book['imageUrl'],
                       height: 120,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -73,7 +77,7 @@ class FavoriteItemsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          item['title'],
+                          book['title'],
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -81,7 +85,7 @@ class FavoriteItemsPage extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          item['description'],
+                          book['description'],
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[700],
@@ -93,7 +97,7 @@ class FavoriteItemsPage extends StatelessWidget {
                         Row(
                           children: [
                             RatingBarIndicator(
-                              rating: item['rating'],
+                              rating: book['rating'],
                               itemBuilder: (context, index) => Icon(
                                 Icons.star,
                                 color: Colors.orange,

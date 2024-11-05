@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/default.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import '../../providers/books_collection_provider.dart';
+import '../../providers/favorites_provider.dart';
 
-class BookSummaryPage extends StatefulWidget {
+
+class BookSummaryPage extends ConsumerStatefulWidget {
   // final String bookTitle;
   // final String author;
   // final int views;
@@ -23,10 +27,13 @@ class BookSummaryPage extends StatefulWidget {
   const BookSummaryPage({Key? key, required this.book}) : super(key: key);
 
   @override
-  _BookSummaryPageState createState() => _BookSummaryPageState();
+  ConsumerState<BookSummaryPage> createState() => _BookSummaryPageState();
 }
 
-class _BookSummaryPageState extends State<BookSummaryPage> {
+class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
+
+  String? selectedCollection;
+  String? selectedCollectionName ; // Default playlist label
   String selectedOption = "";
   String selectedSummaryType = "Text"; // Default summary type
   bool isPlaying = false;
@@ -54,20 +61,44 @@ class _BookSummaryPageState extends State<BookSummaryPage> {
   };
 
 
-
   @override
   Widget build(BuildContext context) {
+    final favoriteBooks = ref.watch(favoriteBooksProvider);
+    final collections = ref.watch(bookCollectionsProvider);
+
+    final isBookFavorite = favoriteBooks.contains(widget.book);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.book['title']),
         backgroundColor: Colors.orange,
         actions: [
           IconButton(
-            icon: Icon(Icons.bookmark_border),
+            icon: Icon(Icons.playlist_add),
             onPressed: () {
-              // Handle saving the book
+              _showPlaylistDialog(context, collections);
             },
           ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              _showDeleteDialog(context, collections);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              isBookFavorite ? Icons.bookmark : Icons.bookmark_border,
+            ),
+            onPressed: () {
+              final notifier = ref.read(favoriteBooksProvider.notifier);
+              if (isBookFavorite) {
+                notifier.removeFavoriteBook(widget.book);
+              } else {
+                notifier.addFavoriteBook(widget.book);
+              }
+            },
+          ),
+
         ],
       ),
       body: SingleChildScrollView(
@@ -112,7 +143,7 @@ class _BookSummaryPageState extends State<BookSummaryPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _optionButton("Listen", Icons.headphones),
+                // _optionButton("Listen", Icons.headphones),
                 _optionButton("Read", Icons.book),
                 // _optionButton("Save", Icons.bookmark),
               ],
@@ -171,6 +202,164 @@ class _BookSummaryPageState extends State<BookSummaryPage> {
       ),
     );
   }
+
+  void _showPlaylistDialog(BuildContext context, List<BookCollection> collections) {
+    final bookCollections = ref.watch(bookCollectionsProvider);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Add to Playlist"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<String>(
+                hint: Text(selectedCollection ?? "Select a playlist",),
+                value: selectedCollection,
+                items: collections.map((collection) {
+                  return DropdownMenuItem<String>(
+                    value: collection.name,
+                    child: Text(collection.name),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedCollection = newValue;
+                    // selectedPlaylistName = (value).toString();
+                  });
+                },
+              ),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _showCreatePlaylistDialog(context);
+                },
+                child: Text("Create New Playlist"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedCollection != null) {
+                  _addToPlaylist(selectedCollection!);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Add to Playlist"),
+            ),
+
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCreatePlaylistDialog(BuildContext context) {
+    final TextEditingController playlistController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Create New Playlist"),
+          content: TextField(
+            controller: playlistController,
+            decoration: InputDecoration(
+              hintText: "Enter playlist name",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (playlistController.text.isNotEmpty) {
+                  ref.read(bookCollectionsProvider.notifier).createNewCollection(playlistController.text);
+                  _addToPlaylist(playlistController.text);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Create and Add"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, List<BookCollection> collections) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Playlist or Book"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<String>(
+                hint: Text(selectedCollection ?? "Select a playlist",),
+                value: selectedCollection,
+                items: collections.map((collection) {
+                  return DropdownMenuItem<String>(
+                    value: collection.name,
+                    child: Text(collection.name),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedCollection = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                if (selectedCollection != null) {
+                  _deleteBookFromPlaylist(selectedCollection!);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Delete Book from Playlist"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (selectedCollection != null) {
+                  _deletePlaylist(selectedCollection!);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Delete Entire Playlist"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addToPlaylist(String collectionName) {
+    final collection = ref.read(bookCollectionsProvider).firstWhere((col) => col.name == collectionName);
+    ref.read(bookCollectionsProvider.notifier).addBookToCollection(collection, widget.book);
+  }
+
+  void _deleteBookFromPlaylist(String collectionName) {
+    final collection = ref.read(bookCollectionsProvider).firstWhere((col) => col.name == collectionName);
+    ref.read(bookCollectionsProvider.notifier).removeBookFromCollection(collection, widget.book);
+  }
+
+  void _deletePlaylist(String collectionName) {
+    ref.read(bookCollectionsProvider.notifier).deleteCollection(collectionName);
+  }
+
 
   Widget _buildSummaryContent() {
     switch (selectedSummaryType) {

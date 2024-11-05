@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
 
 import '../../providers/categorySelector_provider.dart';
 import '../BookSummaryPage/book_summary_page.dart';
@@ -93,12 +94,12 @@ class CategoryBooksWidget extends ConsumerWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BookSummaryPage(book: book),
+                            builder: (context) => BookSummaryPage1(book: book),
                           ),
                         );
                       },
                       child: Container(
-                        width: 180, // Fixed width for each card
+                        width: 190, // Fixed width for each card
                         child: Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(

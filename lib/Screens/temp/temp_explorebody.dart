@@ -5,16 +5,15 @@ import 'package:mini_books/Screens/BookSummaryPage/book_summary_page.dart';
 import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
 
 import '../../providers/explore_book_provider.dart';
-import 'genre_books_page.dart';
 
-class ExploreBody extends ConsumerStatefulWidget {
-  const ExploreBody({Key? key}) : super(key: key);
+class ExploreBody1 extends ConsumerStatefulWidget {
+  const ExploreBody1({Key? key}) : super(key: key);
 
   @override
   _ExploreBody1State createState() => _ExploreBody1State();
 }
 
-class _ExploreBody1State extends ConsumerState<ExploreBody> {
+class _ExploreBody1State extends ConsumerState<ExploreBody1> {
   late TextEditingController _searchController;
 
   @override
@@ -124,21 +123,21 @@ class _ExploreBody1State extends ConsumerState<ExploreBody> {
                     final book = filteredBooks[index];
                     return GestureDetector(
                       child: ListTile(
-                        leading: Image.network(
-                          book['coverUrl'] ?? 'assets/images/default_cover.jpg',
-                          fit: BoxFit.cover,
-                          width: 50,
-                          height: 80,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.broken_image),
-                            );
-                          },
-                        ),
-                        title: Text(book['title'] ?? 'Unknown Title'),
-                        subtitle: Text(book['author'] ?? 'Unknown Author'),
+                      leading: Image.network(
+                        book['coverUrl'] ?? 'assets/images/default_cover.jpg',
+                        fit: BoxFit.cover,
+                        width: 50,
+                        height: 80,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.broken_image),
+                          );
+                        },
                       ),
+                      title: Text(book['title'] ?? 'Unknown Title'),
+                      subtitle: Text(book['author'] ?? 'Unknown Author'),
+                    ),
                       onTap: (){
                         Navigator.push(
                           context,
@@ -176,72 +175,61 @@ class GenreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to the genre-specific book list page
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GenreBooksPage(genre: genre),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: Colors.grey[300],
+                child: const Icon(Icons.broken_image),
+              );
+            },
           ),
-        );
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.broken_image),
-                );
-              },
-            ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    genre,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$bookCount books',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.7),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  genre,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$bookCount books',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -32,24 +32,29 @@
 // final favoriteBooksProvider = NotifierProvider<FavoriteBooksNotifier, List<Book>>(FavoriteBooksNotifier.new);
 
 
+// Favorite books provider
+// Favorite books notifier
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final favoritesProvider = StateNotifierProvider<FavoritesNotifier, List<String>>((ref) {
-  return FavoritesNotifier();
-});
+class FavoriteBooksNotifier extends StateNotifier<List<Map<String, dynamic>>> {
+  FavoriteBooksNotifier() : super([]);
 
-class FavoritesNotifier extends StateNotifier<List<String>> {
-  FavoritesNotifier() : super([]);
-
-  void toggleFavorite(String bookId) {
-    if (state.contains(bookId)) {
-      state = state.where((id) => id != bookId).toList(); // Remove if already favorite
-    } else {
-      state = [...state, bookId]; // Add to favorites
+  void addFavoriteBook(Map<String, dynamic> book) {
+    if (!state.contains(book)) {
+      state = [...state, book];
     }
   }
 
-  bool isFavorite(String bookId) {
-    return state.contains(bookId);
+  void removeFavoriteBook(Map<String, dynamic> book) {
+    state = state.where((b) => b != book).toList();
+  }
+
+  bool isBookFavorite(Map<String, dynamic> book) {
+    return state.contains(book);
   }
 }
+
+// Provider for favorite books
+final favoriteBooksProvider = StateNotifierProvider<FavoriteBooksNotifier, List<Map<String, dynamic>>>(
+      (ref) => FavoriteBooksNotifier(),
+);

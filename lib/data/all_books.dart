@@ -166,7 +166,7 @@ final List<Map<String, dynamic>> books = [
 "aiGeneratedSummary": "A poignant tale of friendship and redemption spanning decades and continents, as Amir seeks to make amends for his childhood betrayal of his friend Hassan in war-torn Afghanistan.",
 "youtubeSummaryLink": "https://www.youtube.com/watch?v=9VPwQIYjUvk",
 "mindmapSummary": "https://example.com/mindmaps/kite-runner.png",
-"category": "Fiction",
+"category": "General_Knowledge",
 "genres": ["Historical Fiction", "Contemporary", "Cultural"]
 },
 {
@@ -180,7 +180,7 @@ final List<Map<String, dynamic>> books = [
 "aiGeneratedSummary": "A dark and intricate thriller that intertwines a family mystery with corporate corruption, featuring the unlikely partnership of a disgraced journalist and a brilliant but troubled hacker.",
 "youtubeSummaryLink": "https://www.youtube.com/watch?v=_qoSLj1Wg_0",
 "mindmapSummary": "https://example.com/mindmaps/girl-with-dragon-tattoo.png",
-"category": "Fiction",
+"category": "Science",
 "genres": ["Mystery", "Thriller", "Crime"]
 },
 ];

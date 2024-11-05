@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mini_books/Screens/Subscription/paymentGateway/razorpay_payment.dart';
 
 class SubscriptionPage extends StatefulWidget {
   @override
@@ -6,7 +7,7 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
-  String selectedPlan = '1 month'; // Default selected plan
+  String selectedPlan = '12 months'; // Default selected plan
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
             // Trial Offer
             Text(
-              '14 day free trial',
+              'Press to continue',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -88,7 +89,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             ),
             SubscriptionOption(
               duration: '12 months',
-              price: 'Rs. 749.99 / 12 months',
+              price: 'Rs. 12,000 / 12 months',
               discount: '16%',
               isPopular: true,
               isActive: selectedPlan == '12 months',
@@ -104,7 +105,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             // Start Trial Button
             ElevatedButton(
               onPressed: () {
-                // Action for starting free trial
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RazorpayPage(
+                      Title: "userId",
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

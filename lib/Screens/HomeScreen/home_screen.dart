@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mini_books/Notifications/notifications.dart';
 import 'package:mini_books/Screens/Collection/saved_books.dart';
 import '../Collection/favorites.dart';
-import '../temp/test2.dart';
+import '../temp/temp3.dart';
 import 'books_list_module.dart';
+import 'category_books_widget.dart';
 import 'category_selector.dart';
 import 'horizontal_scroll_widget.dart';
 
@@ -21,10 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.orange,
         actions: [
           IconButton(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.book_outlined),
             onPressed: () {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => FavoriteItemsPage()));
+                  .push(MaterialPageRoute(builder: (ctx) => FavoriteBooksScreen()));
             },
           ),
           IconButton(
@@ -59,25 +60,25 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 16),
             CategoryBooksWidget(),
             SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                "You might like this",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            CategorySelector(),
-            BookListModule(),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                "You might like this",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            CategorySelector(),
-            BookListModule(),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: Text(
+            //     "You might like this",
+            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            //   ),
+            // ),
+            // CategorySelector(),
+            // BookListModule(),
+            // SizedBox(height: 16),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: Text(
+            //     "You might like this",
+            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            //   ),
+            // ),
+            // CategorySelector(),
+            // BookListModule(),
             SizedBox(height: 100),
           ],
         ),

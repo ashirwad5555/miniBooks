@@ -32,6 +32,7 @@ class _FluidNavBarDemoState extends State {
         extendBody: true,
         body: _child,
         bottomNavigationBar: FluidNavBar(
+          animationFactor: 1,
           icons: [
 
             FluidNavBarIcon(
@@ -40,7 +41,7 @@ class _FluidNavBarDemoState extends State {
                 extras: {"label": "search"}),
             FluidNavBarIcon(
                 icon: Icons.home_filled,
-                backgroundColor: Color(0xFF4285F4),
+                backgroundColor: Color.fromRGBO(245, 148, 92, 1),
                 extras: {"label": "home"}),
             FluidNavBarIcon(
                 icon: IconData(0xe3dd, fontFamily: 'MaterialIcons'),
@@ -52,7 +53,7 @@ class _FluidNavBarDemoState extends State {
                 extras: {"label": "profile"}),
           ],
           onChange: _handleNavigationChange,
-          style: FluidNavBarStyle(iconUnselectedForegroundColor: Colors.white, barBackgroundColor: Colors.white60),
+          style: FluidNavBarStyle(iconUnselectedForegroundColor: Colors.white, barBackgroundColor: Color.fromRGBO(103, 163, 217, 0.5)),
           scaleFactor: 1.5,
           defaultIndex: 1,
           itemBuilder: (icon, item) => Semantics(
@@ -60,6 +61,7 @@ class _FluidNavBarDemoState extends State {
             child: item,
           ),
         ),
+
       ),
     );
   }

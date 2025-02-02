@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mini_books/Notifications/notifications.dart';
 import 'package:mini_books/Screens/Collection/saved_books.dart';
 import '../Collection/favorites.dart';
@@ -14,12 +15,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  late BannerAd _bannerAd;
+  bool isBannerAdReady = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _bannerAd = BannerAd(
+      adUnitId: "ca-app-pub-6953864367287284/7427671718",
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(onAdLoaded: (_) {
+        setState(() {
+          isBannerAdReady = true;
+        });
+      }, onAdFailedToLoad: (ad, error) {
+        isBannerAdReady = false;
+        ad.dispose();
+      }),
+    );
+    _bannerAd.load();
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    // Access current theme
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mini-Books"),
-        backgroundColor: Colors.orange,
+        title: Text("Mini-Books", style: theme.textTheme.headlineLarge,),
+        // backgroundColor: Color.fromRGBO(64, 64, 176, 0.68),
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
             icon: Icon(Icons.book_outlined),
@@ -42,6 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10),
+            isBannerAdReady ? SizedBox(
+              height: _bannerAd.size.height.toDouble(),
+              width: _bannerAd.size.width.toDouble(),
+              child: AdWidget(ad: _bannerAd),
+            ): SizedBox(height: 0,),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
             //   child: TextField(
@@ -56,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
             //   ),
             // ),
             SizedBox(height: 16),
-            HorizontalScrollWidget(),
+            // HorizontalScrollWidget(),
             SizedBox(height: 16),
             CategoryBooksWidget(),
             SizedBox(height: 16),

@@ -64,7 +64,7 @@ class _HorizontalScrollWidgetState extends ConsumerState<HorizontalScrollWidget>
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 15.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 20.0),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24),
@@ -99,7 +99,7 @@ class _HorizontalScrollWidgetState extends ConsumerState<HorizontalScrollWidget>
                         child: Row(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(10.0),
                               child: Hero(
                                 tag: 'book-${book['coverUrl']}',
                                 child: Container(
@@ -138,7 +138,7 @@ class _HorizontalScrollWidgetState extends ConsumerState<HorizontalScrollWidget>
                             ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.all(1.0),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,

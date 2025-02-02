@@ -113,8 +113,8 @@ class CategoryBooksWidget extends ConsumerWidget {
                               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                               child: AspectRatio(
                                 aspectRatio: 3 / 3.5, // Maintain a 3:4 aspect ratio for the image
-                                child: Image.network(
-                                  book['coverUrl'],
+                                child: Image.asset(
+                                  book['coverImage'],
                                   fit: BoxFit.cover,
                                   errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                                     return Container(
@@ -160,47 +160,47 @@ class CategoryBooksWidget extends ConsumerWidget {
                                   ),
                                   SizedBox(height: 8),
                                   // Views and Rating Row
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      // Views
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.remove_red_eye,
-                                            size: 16,
-                                            color: Colors.grey[600],
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '${book['views']} views',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      // Rating
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.star,
-                                            size: 16,
-                                            color: Colors.orange,
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '${book['rating']}/5',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                  // Row(
+                                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  //   children: [
+                                  //     // Views
+                                  //     Row(
+                                  //       children: [
+                                  //         Icon(
+                                  //           Icons.remove_red_eye,
+                                  //           size: 16,
+                                  //           color: Colors.grey[600],
+                                  //         ),
+                                  //         SizedBox(width: 4),
+                                  //         Text(
+                                  //           '${book['views']} views',
+                                  //           style: TextStyle(
+                                  //             fontSize: 12,
+                                  //             color: Colors.grey[600],
+                                  //           ),
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //     // Rating
+                                  //     Row(
+                                  //       children: [
+                                  //         Icon(
+                                  //           Icons.star,
+                                  //           size: 16,
+                                  //           color: Colors.orange,
+                                  //         ),
+                                  //         SizedBox(width: 4),
+                                  //         Text(
+                                  //           '${book['rating']}/5',
+                                  //           style: TextStyle(
+                                  //             fontSize: 12,
+                                  //             color: Colors.grey[600],
+                                  //           ),
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ],
                               ),
                             ),

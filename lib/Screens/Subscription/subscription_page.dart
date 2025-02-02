@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mini_books/Screens/Subscription/paymentGateway/razorpay_payment.dart';
 
+import 'GooglePay/paySampleApp.dart';
+
 class SubscriptionPage extends StatefulWidget {
   @override
   _SubscriptionPageState createState() => _SubscriptionPageState();
@@ -105,14 +107,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             // Start Trial Button
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RazorpayPage(
-                      Title: "userId",
-                    ),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => RazorpayPage(
+                //       Title: "userId",
+                //     ),
+                //   ),
+                // );
+                Navigator.push(context, MaterialPageRoute(builder: (ctx) => PayMaterialApp()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

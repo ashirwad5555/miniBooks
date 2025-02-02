@@ -58,6 +58,7 @@ final List<Map<String, dynamic>> books = [
 "genres": ["Classic", "Literary Fiction", "Social Commentary"]
 },
 {
+  "id": 133,
 "title": "The Catcher in the Rye",
 "author": "J.D. Salinger",
 "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/81OthjkJBuL.jpg",
@@ -114,6 +115,7 @@ final List<Map<String, dynamic>> books = [
 "genres": ["Philosophical Fiction", "Adventure", "Self-help"]
 },
 {
+  "id": 999,
 "title": "Harry Potter and the Philosopher's Stone",
 "author": "J.K. Rowling",
 "coverUrl": "https://images-na.ssl-images-amazon.com/images/I/81iqZ2HHD-L.jpg",

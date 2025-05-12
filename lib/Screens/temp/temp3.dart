@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
 import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
 
 import '../../providers/favorites_provider.dart';
@@ -17,37 +18,39 @@ class FavoriteBooksScreen extends ConsumerWidget {
       ),
       body: favoriteBooks.isEmpty
           ? Center(
-        child: Text(
-          'No favorite books yet',
-          style: TextStyle(fontSize: 18, color: Colors.grey),
-        ),
-      )
+              child: Text(
+                'No favorite books yet',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
           : GridView.builder(
-        padding: EdgeInsets.all(16),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        itemCount: favoriteBooks.length,
-        itemBuilder: (context, index) {
-          final book = favoriteBooks[index];
-          return BookCard(
-            book: book,
-            onRemove: () {
-              ref.read(favoriteBooksProvider.notifier).removeFavoriteBook(book);
-            },
-            onReadNow: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => BookSummaryPage1(book: book),
-                ),
-              );
-            },
-          );
-        },
-      ),
+              padding: EdgeInsets.all(16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.7,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: favoriteBooks.length,
+              itemBuilder: (context, index) {
+                final book = favoriteBooks[index];
+                return BookCard(
+                  book: book,
+                  onRemove: () {
+                    ref
+                        .read(favoriteBooksProvider.notifier)
+                        .removeFavoriteBook(book);
+                  },
+                  onReadNow: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => BookDetails(bookData: book),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }
@@ -74,10 +77,18 @@ class BookCard extends StatelessWidget {
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-              child: Image.network(
-                book['coverUrl'] ?? 'https://via.placeholder.com/150x200',
+              child: Image.asset(
+                'assets/${book['coverImage']}',
                 width: double.infinity,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  print('Failed to load image: assets/${book['coverImage']}');
+                  return Image.asset(
+                    'assets/images/bookPlaceHolder.png',
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
             ),
           ),

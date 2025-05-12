@@ -1,90 +1,180 @@
-// book_providers.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_books/data/all_books.dart';
+import 'package:mini_books/data/books_data.dart';
 
-import 'all_books_provider.dart';
+// State class for book search
+class BookSearchState {
+  final List<Map<String, dynamic>> filteredBooks;
+  final String searchQuery;
+  final String? selectedCategory;
 
-// Provider for fetching initial books data
-final booksDataProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  // Replace this with your actual data fetching logic
-  return Future.value(books);
+  BookSearchState({
+    required this.filteredBooks,
+    this.searchQuery = '',
+    this.selectedCategory,
+  });
+
+  BookSearchState copyWith({
+    List<Map<String, dynamic>>? filteredBooks,
+    String? searchQuery,
+    String? selectedCategory,
+  }) {
+    return BookSearchState(
+      filteredBooks: filteredBooks ?? this.filteredBooks,
+      searchQuery: searchQuery ?? this.searchQuery,
+      selectedCategory: selectedCategory,
+    );
+  }
+}
+
+// Notifier class for book search logic
+class BookSearchNotifier extends StateNotifier<BookSearchState> {
+  BookSearchNotifier() : super(BookSearchState(filteredBooks: allBooks));
+
+  void searchBooks(String query) {
+    if (query.isEmpty) {
+      if (state.selectedCategory != null) {
+        // If we have a category selected, filter by that category
+        final filtered = allBooks.where((book) {
+          return book['main_tag'] == state.selectedCategory;
+        }).toList();
+        state = BookSearchState(
+            filteredBooks: filtered,
+            searchQuery: query,
+            selectedCategory: state.selectedCategory);
+      } else {
+        // No category selected, show all books
+        state = BookSearchState(filteredBooks: allBooks, searchQuery: query);
+      }
+    } else {
+      final lowercaseQuery = query.toLowerCase();
+      List<Map<String, dynamic>> baseList = state.selectedCategory != null
+          ? allBooks
+              .where((book) => book['main_tag'] == state.selectedCategory)
+              .toList()
+          : allBooks;
+
+      final filtered = baseList.where((book) {
+        // Search by title
+        final title = book['title'].toString().toLowerCase();
+        if (title.contains(lowercaseQuery)) {
+          return true;
+        }
+
+        // Search by author (if available)
+        final author = book['author'].toString().toLowerCase();
+        if (author.contains(lowercaseQuery)) {
+          return true;
+        }
+
+        // Search by category tags
+        final categoryTags = book['category Tags'] as List?;
+        if (categoryTags != null) {
+          for (final tag in categoryTags) {
+            if (tag.toString().toLowerCase().contains(lowercaseQuery)) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      }).toList();
+
+      state = BookSearchState(
+          filteredBooks: filtered,
+          searchQuery: query,
+          selectedCategory: state.selectedCategory);
+    }
+  }
+
+  void selectCategory(String? category) {
+    if (category == null) {
+      // Reset to show all books
+      state = BookSearchState(
+          filteredBooks: allBooks,
+          searchQuery: state.searchQuery,
+          selectedCategory: null);
+    } else {
+      // Filter books by the selected category
+      final filtered =
+          allBooks.where((book) => book['main_tag'] == category).toList();
+      state = BookSearchState(
+          filteredBooks: filtered,
+          searchQuery: state.searchQuery,
+          selectedCategory: category);
+    }
+  }
+
+  void clearSearch() {
+    if (state.selectedCategory != null) {
+      // Keep the category filter
+      selectCategory(state.selectedCategory);
+    } else {
+      // Clear everything
+      state = BookSearchState(filteredBooks: allBooks, searchQuery: '');
+    }
+  }
+
+  void resetFilters() {
+    state = BookSearchState(filteredBooks: allBooks, searchQuery: '');
+  }
+}
+
+// Create a provider to get unique categories
+final categoriesProvider = Provider<List<String>>((ref) {
+  final Set<String> uniqueCategories = {};
+
+  for (var book in allBooks) {
+    final mainTag = book['main_tag'];
+    if (mainTag != null && mainTag is String && mainTag.isNotEmpty) {
+      uniqueCategories.add(mainTag);
+    }
+  }
+
+  final List<String> categories = uniqueCategories.toList();
+  categories.sort(); // Sort alphabetically
+
+  return categories;
 });
 
-// Provider specifically for genres
-final genresProvider = Provider<Set<String>>((ref) {
-  final books = ref.watch(booksProvider);
-  final Set<String> allGenres = {};
+// Add this to providers.dart
+// Provider to get unique category tags (not main categories)
+final categoryTagsProvider = Provider<List<String>>((ref) {
+  final Set<String> uniqueTags = {};
 
-  for (final book in books) {
-    final genres = book['genres'];
-    if (genres != null && genres is List) {
-      for (final genre in genres) {
-        if (genre is String) {
-          allGenres.add(genre);
+  for (var book in allBooks) {
+    final categoryTags = book['category Tags'] as List?;
+    if (categoryTags != null) {
+      for (final tag in categoryTags) {
+        if (tag is String && tag.isNotEmpty) {
+          uniqueTags.add(tag);
         }
       }
     }
   }
 
-  return allGenres;
+  final List<String> tags = uniqueTags.toList();
+  tags.sort(); // Sort alphabetically
+
+  return tags;
 });
 
-// Provider for managing books state
-final booksProvider1 = StateNotifierProvider<BooksNotifier, List<Map<String, dynamic>>>((ref) {
-  final booksNotifier = BooksNotifier();
+// Selected tag provider
+final selectedTagProvider = StateProvider<String?>((ref) => null);
 
-  // Listen to booksDataProvider and update state when data is available
-  ref.listen(booksDataProvider, (previous, next) {
-    next.whenData((books) {
-      booksNotifier.setBooks(books);
-    });
+// Create the book search provider
+final bookSearchProvider =
+    StateNotifierProvider<BookSearchNotifier, BookSearchState>((ref) {
+  return BookSearchNotifier();
+});
+
+// Search controller provider
+final searchControllerProvider = Provider<TextEditingController>((ref) {
+  final controller = TextEditingController();
+
+  ref.onDispose(() {
+    controller.dispose();
   });
 
-  return booksNotifier;
-});
-
-class BooksNotifier extends StateNotifier<List<Map<String, dynamic>>> {
-  BooksNotifier() : super([]);
-
-  void setBooks(List<Map<String, dynamic>> books) {
-    state = books;
-  }
-
-  Set<String> getAllGenres() {
-    final Set<String> genres = {};
-    for (var book in state) {
-      if (book['genres'] != null) {
-        final List<String> bookGenres = List<String>.from(book['genres']);
-        genres.addAll(bookGenres);
-      }
-    }
-    return genres;
-  }
-}
-
-final searchQueryProvider = StateProvider<String>((ref) => '');
-
-final filteredBooksProvider1 = Provider<List<Map<String, dynamic>>>((ref) {
-  final books = ref.watch(booksProvider);
-  final query = ref.watch(searchQueryProvider);
-
-  if (query.isEmpty) return books;
-
-  final lowercaseQuery = query.toLowerCase();
-  return books.where((book) {
-    return (book['title'] ?? '').toLowerCase().contains(lowercaseQuery) ||
-        (book['author'] ?? '').toLowerCase().contains(lowercaseQuery) ||
-        (book['genres'] as List<String>?)?.any((genre) =>
-            genre.toLowerCase().contains(lowercaseQuery)) == true ||
-        (book['category'] ?? '').toLowerCase().contains(lowercaseQuery);
-  }).toList();
-});
-
-// Provider for books of a specific genre
-final booksByGenreProvider = Provider.family<List<Map<String, dynamic>>, String>((ref, genre) {
-  final books = ref.watch(booksProvider);
-  return books.where((book) {
-    final genres = (book['genres'] as List?)?.cast<String>() ?? [];
-    return genres.contains(genre);
-  }).toList();
+  return controller;
 });

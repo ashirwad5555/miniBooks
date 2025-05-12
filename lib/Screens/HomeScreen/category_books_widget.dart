@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
 import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
 
 import '../../providers/categorySelector_provider.dart';
@@ -13,7 +14,7 @@ class CategoryBooksWidget extends ConsumerWidget {
     final filteredBooks = ref.watch(filteredBooksProvider);
 
     return SizedBox(
-      height: 450, // Set a specific height
+      height: 550, // Increased from 450 to give more room for the grid
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,191 +30,182 @@ class CategoryBooksWidget extends ConsumerWidget {
               ),
             ),
           ),
-          // Category selection
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                final isSelected = category == selectedCategory;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      ref.read(selectedCategoryProvider.notifier).state = category;
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isSelected ? Colors.orange : Colors.black87,
-                      foregroundColor: isSelected ? Colors.black87 : Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-
-                      ),
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-
-                    ),
-                    child: Text(
-                      category,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          SizedBox(height: 10),
 
           // Horizontal scrollable book list with views and rating
           Expanded(
-            child: filteredBooks.isEmpty
-                ? Center(
-              child: Text(
-                'No books available in this category',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                ),
-              ),
-            )
-                : ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: filteredBooks.length,
-              itemBuilder: (context, index) {
-                final book = filteredBooks[index];
-                return Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookSummaryPage1(book: book),
+            child: Column(
+              children: [
+                // Category selection - Keep this compact
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8), // Reduced vertical margin
+                  height: 36, // Slightly reduced height
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      final isSelected = category == selectedCategory;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            ref.read(selectedCategoryProvider.notifier).state =
+                                category;
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                isSelected ? Colors.orange : Colors.black87,
+                            foregroundColor:
+                                isSelected ? Colors.black87 : Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            elevation: 0,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 8),
+                          ),
+                          child: Text(
+                            category
+                                .trim()
+                                .replaceAll(RegExp(r'[0-9-]'), '')
+                                .replaceFirst(RegExp(r'^\.+'), '')
+                                .trim(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                       );
                     },
-                    child: Container(
-                      width: 190, // Fixed width for each card
-                      child: Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Image section with fixed height and rounded corners
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                              child: AspectRatio(
-                                aspectRatio: 3 / 3.5, // Maintain a 3:4 aspect ratio for the image
-                                child: Image.asset(
-                                  book['coverImage'],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                    return Container(
-                                      color: Colors.grey[300],
-                                      child: Icon(
-                                        Icons.chrome_reader_mode_outlined,
-                                        size: 50,
-                                        color: Colors.grey[600],
+                  ),
+                ),
+
+                // Book Grid - Increase the space allocation
+                Expanded(
+                  child: filteredBooks.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No books available in this category',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        )
+                      : GridView.builder(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 10.0),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio:
+                                0.65, // Adjusted to make cards taller
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing:
+                                15, // Increased spacing between rows
+                          ),
+                          itemCount: filteredBooks.length,
+                          itemBuilder: (context, index) {
+                            final book = filteredBooks[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        BookDetails(bookData: book),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Image section
+                                    Expanded(
+                                      flex: 3,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(16)),
+                                        child: Image.asset(
+                                          'assets/${book['coverImage']}',
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (BuildContext context,
+                                              Object exception,
+                                              StackTrace? stackTrace) {
+                                            print(
+                                                'Failed to load image: assets/${book['coverImage']}');
+                                            return Image.asset(
+                                              'assets/images/bookPlaceHolder.png',
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Container(
+                                                  color: Colors.grey[300],
+                                                  child: Icon(
+                                                    Icons
+                                                        .chrome_reader_mode_outlined,
+                                                    size: 50,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
                                       ),
-                                    );
-                                  },
+                                    ),
+                                    // Text information
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              book['title'] ?? 'Untitled',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                                color: Colors.black87,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            SizedBox(height: 2),
+                                            Text(
+                                              book['author'] ??
+                                                  'Unknown Author',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.grey[600],
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: [
-                                  // Title
-                                  Text(
-                                    book['title'],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.black87,
-
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  SizedBox(height: 4),
-                                  // Author
-                                  Text(
-                                    book['author'],
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  SizedBox(height: 8),
-                                  // Views and Rating Row
-                                  // Row(
-                                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  //   children: [
-                                  //     // Views
-                                  //     Row(
-                                  //       children: [
-                                  //         Icon(
-                                  //           Icons.remove_red_eye,
-                                  //           size: 16,
-                                  //           color: Colors.grey[600],
-                                  //         ),
-                                  //         SizedBox(width: 4),
-                                  //         Text(
-                                  //           '${book['views']} views',
-                                  //           style: TextStyle(
-                                  //             fontSize: 12,
-                                  //             color: Colors.grey[600],
-                                  //           ),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //     // Rating
-                                  //     Row(
-                                  //       children: [
-                                  //         Icon(
-                                  //           Icons.star,
-                                  //           size: 16,
-                                  //           color: Colors.orange,
-                                  //         ),
-                                  //         SizedBox(width: 4),
-                                  //         Text(
-                                  //           '${book['rating']}/5',
-                                  //           style: TextStyle(
-                                  //             fontSize: 12,
-                                  //             color: Colors.grey[600],
-                                  //           ),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                ],
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                      ),
-                    ),
-                  ),
-                );
-              },
+                ),
+              ],
             ),
           ),
-
         ],
       ),
     );

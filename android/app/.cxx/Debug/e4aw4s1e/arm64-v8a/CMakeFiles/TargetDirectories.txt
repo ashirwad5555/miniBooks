@@ -1,0 +1,2 @@
+D:/appsFlutter/mini_books/android/app/.cxx/Debug/e4aw4s1e/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/appsFlutter/mini_books/android/app/.cxx/Debug/e4aw4s1e/arm64-v8a/CMakeFiles/rebuild_cache.dir

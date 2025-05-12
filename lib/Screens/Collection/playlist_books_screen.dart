@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
+import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart'; // Use BookDetails instead
 import '../../providers/books_collection_provider.dart';
-import '../BookSummaryPage/book_summary_page.dart';
 
 class PlaylistBooksScreen extends ConsumerWidget {
   final BookCollection collection;
-  const PlaylistBooksScreen({Key? key, required this.collection}) : super(key: key);
+  const PlaylistBooksScreen({Key? key, required this.collection})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,61 +34,159 @@ class PlaylistBooksScreen extends ConsumerWidget {
       ),
       body: collection.books.isEmpty
           ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.library_books, size: 80, color: Colors.grey),
-            const SizedBox(height: 20),
-            Text(
-              'No books in this playlist.',
-              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      )
-          : ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        itemCount: collection.books.length,
-        itemBuilder: (context, index) {
-          final book = collection.books[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (ctx) => BookSummaryPage1(book: book),
-                ),
-              );
-            },
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                title: Text(
-                  book['title'],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Color(0xFF4A4A8A),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.library_books, size: 80, color: Colors.grey),
+                  const SizedBox(height: 20),
+                  Text(
+                    'No books in this playlist.',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                   ),
+                ],
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.65, // Adjusted to make cards taller
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 15,
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.redAccent),
-                  onPressed: () => showDeleteBookDialog(context, ref, book),
-                ),
+                itemCount: collection.books.length,
+                itemBuilder: (context, index) {
+                  final book = collection.books[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (ctx) => BookDetails(bookData: book),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Image section
+                          Expanded(
+                            flex: 3,
+                            child: Stack(
+                              children: [
+                                // Book cover
+                                ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(16)),
+                                  child: Image.asset(
+                                    'assets/${book['coverImage']}',
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (BuildContext context,
+                                        Object exception,
+                                        StackTrace? stackTrace) {
+                                      print(
+                                          'Failed to load image: assets/${book['coverImage']}');
+                                      return Image.asset(
+                                        'assets/images/bookPlaceHolder.png',
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Container(
+                                            color: Colors.grey[300],
+                                            child: Icon(
+                                              Icons.chrome_reader_mode_outlined,
+                                              size: 50,
+                                              color: Colors.grey[600],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                // Delete button on top right
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(20),
+                                      onTap: () => showDeleteBookDialog(
+                                          context, ref, book),
+                                      child: Container(
+                                        padding: EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black45,
+                                          borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.delete_outline,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Text information
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    book['title'] ?? 'Untitled',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    book['author'] ?? 'Unknown Author',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-          );
-        },
-      ),
     );
   }
 
-  void showDeleteBookDialog(BuildContext context, WidgetRef ref, Map<String, dynamic> book) {
+  // Keep the existing dialog methods
+  void showDeleteBookDialog(
+      BuildContext context, WidgetRef ref, Map<String, dynamic> book) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -107,7 +205,9 @@ class PlaylistBooksScreen extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                ref.read(bookCollectionsProvider.notifier).removeBookFromCollection(collection, book);
+                ref
+                    .read(bookCollectionsProvider.notifier)
+                    .removeBookFromCollection(collection, book);
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -140,7 +240,9 @@ class PlaylistBooksScreen extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                ref.read(bookCollectionsProvider.notifier).deleteCollection(collection.name);
+                ref
+                    .read(bookCollectionsProvider.notifier)
+                    .deleteCollection(collection.name);
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(

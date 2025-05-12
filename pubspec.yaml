@@ -51,6 +51,7 @@ dependencies:
   google_mobile_ads: ^5.2.0
   flutter_upi_india: ^0.0.6
   google_fonts: ^6.2.1
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -76,7 +77,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/
+    - assets/Book_covers/
     - assets/images/
+    - assets/Book_covers/job__GYaibC5Q_yiDIiaIpheXw_results/
+    - assets/Book_covers/job_3Z7LJf0qQ9WcJ93-DgSFlA_results/
     - assets/default_google_pay_config.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

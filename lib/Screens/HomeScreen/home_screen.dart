@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
             //   ),
             // ),
             SizedBox(height: 16),
-            // HorizontalScrollWidget(),
+            HorizontalScrollWidget(),
             SizedBox(height: 16),
             CategoryBooksWidget(),
             SizedBox(height: 16),

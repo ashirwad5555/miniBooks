@@ -259,6 +259,8 @@ final List<Map<String, dynamic>> staticTopBooks = [
 ];
 
 class HorizontalScrollWidget extends ConsumerStatefulWidget {
+  const HorizontalScrollWidget({super.key});
+
   @override
   _HorizontalScrollWidgetState createState() => _HorizontalScrollWidgetState();
 }
@@ -276,7 +278,7 @@ class _HorizontalScrollWidgetState
   }
 
   void _startAutoScroll() {
-    _autoScrollTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_pageController.hasClients) {
         _currentPage++;
         if (_currentPage >= staticTopBooks.length) {
@@ -284,7 +286,7 @@ class _HorizontalScrollWidgetState
         }
         _pageController.animateToPage(
           _currentPage,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       }
@@ -295,7 +297,7 @@ class _HorizontalScrollWidgetState
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           height: 240,
           child: PageView.builder(
             controller: _pageController,
@@ -335,20 +337,20 @@ class _HorizontalScrollWidgetState
                             color: Colors.black.withOpacity(0.1),
                             spreadRadius: 1,
                             blurRadius: 15,
-                            offset: Offset(0, 8),
+                            offset: const Offset(0, 8),
                           ),
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
                             spreadRadius: 0,
                             blurRadius: 5,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
                         child: Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -374,7 +376,7 @@ class _HorizontalScrollWidgetState
                                           color: Colors.black.withOpacity(0.2),
                                           spreadRadius: 0,
                                           blurRadius: 8,
-                                          offset: Offset(0, 4),
+                                          offset: const Offset(0, 4),
                                         ),
                                       ],
                                     ),
@@ -418,7 +420,7 @@ class _HorizontalScrollWidgetState
                                           height: 1.2,
                                           shadows: [
                                             Shadow(
-                                              offset: Offset(0, 1),
+                                              offset: const Offset(0, 1),
                                               blurRadius: 2,
                                               color:
                                                   Colors.black.withOpacity(0.3),
@@ -428,7 +430,7 @@ class _HorizontalScrollWidgetState
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      SizedBox(height: 8),
+                                      const SizedBox(height: 8),
                                       Text(
                                         book['author'] ?? "Unknown Author",
                                         style: TextStyle(
@@ -454,7 +456,7 @@ class _HorizontalScrollWidgetState
             },
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         SmoothPageIndicator(
           controller: _pageController,
           count: staticTopBooks.length,
@@ -469,7 +471,7 @@ class _HorizontalScrollWidgetState
             activeDotDecoration: DotDecoration(
               width: 24,
               height: 8,
-              color: Color(0xFFFF5722),
+              color: const Color(0xFFFF5722),
               borderRadius: BorderRadius.circular(4),
             ),
           ),

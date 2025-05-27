@@ -7,6 +7,8 @@ import '../../providers/categorySelector_provider.dart';
 import '../BookSummaryPage/book_summary_page.dart';
 
 class CategoryBooksWidget extends ConsumerWidget {
+  const CategoryBooksWidget({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(categoriesProvider);
@@ -18,9 +20,9 @@ class CategoryBooksWidget extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'Top picks for you',
               style: TextStyle(
@@ -62,7 +64,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             elevation: 0,
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 18, vertical: 8),
                           ),
                           child: Text(
@@ -71,7 +73,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                 .replaceAll(RegExp(r'[0-9-]'), '')
                                 .replaceFirst(RegExp(r'^\.+'), '')
                                 .trim(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -95,10 +97,10 @@ class CategoryBooksWidget extends ConsumerWidget {
                           ),
                         )
                       : GridView.builder(
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 10.0),
                           gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                              const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             childAspectRatio:
                                 0.65, // Adjusted to make cards taller
@@ -131,7 +133,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                     Expanded(
                                       flex: 3,
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.vertical(
+                                        borderRadius: const BorderRadius.vertical(
                                             top: Radius.circular(16)),
                                         child: Image.asset(
                                           'assets/${book['coverImage']}',
@@ -173,7 +175,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                           children: [
                                             Text(
                                               book['title'] ?? 'Untitled',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 12,
                                                 color: Colors.black87,
@@ -181,7 +183,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                            SizedBox(height: 2),
+                                            const SizedBox(height: 2),
                                             Text(
                                               book['author'] ??
                                                   'Unknown Author',

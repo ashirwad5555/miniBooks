@@ -1,36 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:mini_books/Screens/HomeScreen/home_screen.dart';
-import 'package:mini_books/Screens/temp/test1.dart';
+import 'package:mini_books/Screens/Auth/auth_screen.dart';
+import 'package:mini_books/Screens/Auth/simple_auth_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'NavBar/nav_bar.dart';
-import 'Screens/GoogleAdds/googleAddsHome.dart';
 import 'Screens/SplashScreen/splash_screen.dart';
-import 'Screens/Subscription/GooglePay/GPayByCardHome.dart';
-import 'Screens/Subscription/GooglePay/paySampleApp.dart';
-import 'Screens/temp/test2.dart';
 import 'Theme/mytheme.dart';
+import 'providers/auth_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(const ProviderScope(child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme, // Light theme
-      themeMode: ThemeMode.system, // Automatically switches based on system settings
-      home: FluidNavBarDemo(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          final prefs = snapshot.data!;
+          final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+          
+          return MaterialApp(
+            title: 'Mini Books',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            // darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.system,
+            home: isLoggedIn ? const FluidNavBarDemo(): const SimpleAuthScreen(),
+          );
+        }
+        
+        return const MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
     );
   }
 }
-

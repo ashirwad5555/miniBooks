@@ -4,6 +4,8 @@ import '../temp/temp_explorebody.dart';
 import 'explore_body.dart';
 
 class ExplorePage extends StatefulWidget {
+  const ExplorePage({super.key});
+
   @override
   State<ExplorePage> createState() => _ExplorePageState();
 }
@@ -14,13 +16,13 @@ class _ExplorePageState extends State<ExplorePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Category'),
+        title: const Text('Category'),
         backgroundColor: Colors.orange,
         elevation: 0,
         centerTitle: true,
       ),
 
-      body: ExploreBody(),
+      body: const ExploreBody(),
 
     );
   }

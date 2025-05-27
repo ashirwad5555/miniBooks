@@ -4,7 +4,7 @@ import '../../providers/books_collection_provider.dart'; // Import the collectio
 import '../Collection/playlist_books_screen.dart';
 
 class BookShelfScreen extends ConsumerWidget {
-  const BookShelfScreen({Key? key}) : super(key: key);
+  const BookShelfScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -12,7 +12,7 @@ class BookShelfScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('BookShelf'),
+        title: const Text('BookShelf'),
         backgroundColor: Colors.orange,
       ),
       body: bookCollections.isEmpty
@@ -25,7 +25,7 @@ class BookShelfScreen extends ConsumerWidget {
           : Padding(
         padding: const EdgeInsets.all(12.0),
         child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 12.0,
             mainAxisSpacing: 12.0,
@@ -54,7 +54,7 @@ class BookShelfScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [Colors.orangeAccent, Colors.deepOrange],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -65,16 +65,16 @@ class BookShelfScreen extends ConsumerWidget {
                     children: [
                       Text(
                         collection.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Text(
                         '${collection.books.length} book(s)',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.white70,
                         ),

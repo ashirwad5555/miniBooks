@@ -5,16 +5,16 @@ class CategoryTab extends StatelessWidget {
   final String title;
   final bool isActive;
 
-  CategoryTab({required this.title, this.isActive = false});
+  const CategoryTab({super.key, required this.title, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? Colors.orange : Color(0xFF262626),
+          color: isActive ? Colors.orange : const Color(0xFF262626),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Center(

@@ -29,19 +29,21 @@ class FavoriteItemsPage extends ConsumerWidget {
     },
   ];
 
+   FavoriteItemsPage({super.key});
+
   @override
   Widget build(BuildContext context , WidgetRef ref) {
     final favoriteBooks = ref.watch(favoriteBooksProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorite Items'),
+        title: const Text('Favorite Items'),
         backgroundColor: Colors.orange,
       ),
       body: Padding(
         padding: const EdgeInsets.all(4.0),
         child: GridView.builder(
           itemCount: favoriteItems.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, // Number of items per row
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
@@ -59,7 +61,7 @@ class FavoriteItemsPage extends ConsumerWidget {
                 children: [
                   // Image Section
                   ClipRRect(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
                     ),
@@ -78,12 +80,12 @@ class FavoriteItemsPage extends ConsumerWidget {
                       children: [
                         Text(
                           book['title'],
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           book['description'],
                           style: TextStyle(
@@ -93,12 +95,12 @@ class FavoriteItemsPage extends ConsumerWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             RatingBarIndicator(
                               rating: book['rating'],
-                              itemBuilder: (context, index) => Icon(
+                              itemBuilder: (context, index) => const Icon(
                                 Icons.star,
                                 color: Colors.orange,
                               ),
@@ -114,14 +116,14 @@ class FavoriteItemsPage extends ConsumerWidget {
                                 children: [
                                   IconButton(
                                     icon:
-                                        Icon(Icons.favorite, color: Colors.red),
+                                        const Icon(Icons.favorite, color: Colors.red),
                                     onPressed: () {
                                       // Like button functionality
                                     },
                                   ),
                                   IconButton(
                                     icon:
-                                        Icon(Icons.delete, color: Colors.grey),
+                                        const Icon(Icons.delete, color: Colors.grey),
                                     onPressed: () {
                                       // Delete button functionality
                                     },

@@ -26,11 +26,13 @@ class BookListModule extends StatelessWidget {
     },
   ];
 
+  BookListModule({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Container(
+      child: SizedBox(
         height: 250,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -64,7 +66,7 @@ class BookListModule extends StatelessWidget {
                         color: Colors.grey.withOpacity(0.5),
                         blurRadius: 10,
                         spreadRadius: 2,
-                        offset: Offset(2, 4),
+                        offset: const Offset(2, 4),
                       ),
                     ],
                   ),
@@ -75,7 +77,7 @@ class BookListModule extends StatelessWidget {
                         Container(
                           height: 150,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(16),
                               topRight: Radius.circular(16),
                             ),
@@ -85,18 +87,18 @@ class BookListModule extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         // Book Title
                         Text(
                           book['title'],
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         // Author Name
                         Text(
                           "by ${book['author']}",
@@ -105,27 +107,27 @@ class BookListModule extends StatelessWidget {
                             color: Colors.grey[600],
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         // Views and Rating Row
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.remove_red_eye,
+                            const Icon(Icons.remove_red_eye,
                                 color: Colors.grey, size: 16),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               "${book['views']} views",
                               style:
-                                  TextStyle(fontSize: 12, color: Colors.grey),
+                                  const TextStyle(fontSize: 12, color: Colors.grey),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Icon(Icons.star,
                                 color: Colors.yellow[700], size: 16),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               "${book['rating']}",
                               style:
-                                  TextStyle(fontSize: 12, color: Colors.grey),
+                                  const TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
                         ),

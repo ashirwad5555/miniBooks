@@ -7,25 +7,27 @@ import '../../providers/favorites_provider.dart';
 import '../BookSummaryPage/book_summary_page.dart';
 
 class FavoriteBooksScreen extends ConsumerWidget {
+  const FavoriteBooksScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favoriteBooks = ref.watch(favoriteBooksProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorite Books'),
+        title: const Text('Favorite Books'),
         backgroundColor: Colors.orange,
       ),
       body: favoriteBooks.isEmpty
-          ? Center(
+          ? const Center(
               child: Text(
                 'No favorite books yet',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
             )
           : GridView.builder(
-              padding: EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.7,
                 crossAxisSpacing: 16,
@@ -61,11 +63,11 @@ class BookCard extends StatelessWidget {
   final VoidCallback onReadNow;
 
   const BookCard({
-    Key? key,
+    super.key,
     required this.book,
     required this.onRemove,
     required this.onReadNow,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,7 @@ class BookCard extends StatelessWidget {
         children: [
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
               child: Image.asset(
                 'assets/${book['coverImage']}',
                 width: double.infinity,
@@ -93,26 +95,26 @@ class BookCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   book['title'] ?? 'Unknown Title',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   'by ${book['author'] ?? 'Unknown Author'}',
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.orange[100],
                     borderRadius: BorderRadius.circular(12),
@@ -125,20 +127,21 @@ class BookCard extends StatelessWidget {
               ],
             ),
           ),
-          ButtonBar(
-            buttonPadding: EdgeInsets.zero,
-            alignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton(
-                child: Text('Read Now', style: TextStyle(fontSize: 12)),
-                onPressed: onReadNow,
-              ),
-              TextButton(
-                child: Text('Remove', style: TextStyle(fontSize: 12)),
-                onPressed: onRemove,
-              ),
-            ],
-          ),
+          // OverflowBar(
+          //   buttonPadding: EdgeInsets.zero,
+          //   alignment: MainAxisAlignment.spaceEvenly,
+          //   children: [
+          //     TextButton(
+          //       onPressed: onReadNow,
+          //       child: Text('Read Now', style: TextStyle(fontSize: 12)),
+          //     ),
+          //     TextButton(
+          //       onPressed: onRemove,
+          //       child: Text('Remove', style: TextStyle(fontSize: 12)),
+          //     ),
+          //   ],
+          // ),
+        
         ],
       ),
     );

@@ -24,7 +24,7 @@ class BookSummaryPage extends ConsumerStatefulWidget {
 
   final Map<String, dynamic> book;
 
-  const BookSummaryPage({Key? key, required this.book}) : super(key: key);
+  const BookSummaryPage({super.key, required this.book});
 
   @override
   ConsumerState<BookSummaryPage> createState() => _BookSummaryPageState();
@@ -54,10 +54,10 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
   ];
 
   final Map<String, Widget> summaryTypes = {
-    'Text': Icon(Icons.text_fields),
-    'AI': Icon(Icons.psychology),
-    'YouTube': Icon(Icons.play_circle_filled),
-    'Mindmap': Icon(Icons.account_tree),
+    'Text': const Icon(Icons.text_fields),
+    'AI': const Icon(Icons.psychology),
+    'YouTube': const Icon(Icons.play_circle_filled),
+    'Mindmap': const Icon(Icons.account_tree),
   };
 
 
@@ -74,13 +74,13 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
         backgroundColor: Colors.orange,
         actions: [
           IconButton(
-            icon: Icon(Icons.playlist_add),
+            icon: const Icon(Icons.playlist_add),
             onPressed: () {
               _showPlaylistDialog(context, collections);
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               _showDeleteDialog(context, collections);
             },
@@ -112,29 +112,29 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                 children: [
                   Text(
                     widget.book['title'],
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     "by ${widget.book['author']}",
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.remove_red_eye, color: Colors.grey, size: 18),
-                      SizedBox(width: 5),
+                      const Icon(Icons.remove_red_eye, color: Colors.grey, size: 18),
+                      const SizedBox(width: 5),
                       Text("${widget.book['views']} views",
-                          style: TextStyle(fontSize: 14, color: Colors.grey)),
-                      SizedBox(width: 15),
+                          style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                      const SizedBox(width: 15),
                       Icon(Icons.star, color: Colors.yellow[700], size: 18),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       Text("${widget.book['rating']}",
-                          style: TextStyle(fontSize: 14, color: Colors.grey)),
+                          style: const TextStyle(fontSize: 14, color: Colors.grey)),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -148,18 +148,18 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                 // _optionButton("Save", Icons.bookmark),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Summary Type Selector
             if (selectedOption == "Read")
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Summary Type",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -170,7 +170,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                             label: Row(
                               children: [
                                 entry.value,
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                                 Text(entry.key),
                               ],
                             ),
@@ -209,7 +209,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add to Playlist"),
+          title: const Text("Add to Playlist"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -235,14 +235,14 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                   Navigator.of(context).pop();
                   _showCreatePlaylistDialog(context);
                 },
-                child: Text("Create New Playlist"),
+                child: const Text("Create New Playlist"),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -251,7 +251,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Add to Playlist"),
+              child: const Text("Add to Playlist"),
             ),
 
           ],
@@ -267,17 +267,17 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Create New Playlist"),
+          title: const Text("Create New Playlist"),
           content: TextField(
             controller: playlistController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: "Enter playlist name",
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -287,7 +287,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Create and Add"),
+              child: const Text("Create and Add"),
             ),
           ],
         );
@@ -300,7 +300,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Playlist or Book"),
+          title: const Text("Delete Playlist or Book"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -329,7 +329,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Delete Book from Playlist"),
+              child: const Text("Delete Book from Playlist"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -338,7 +338,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Delete Entire Playlist"),
+              child: const Text("Delete Entire Playlist"),
             ),
           ],
         );
@@ -378,8 +378,8 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
 
   Widget _buildTextSummary() {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.orange[50],
         borderRadius: BorderRadius.circular(20),
@@ -388,7 +388,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Text Summary",
             style: TextStyle(
               fontSize: 20,
@@ -396,13 +396,12 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
               color: Colors.orange,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           SelectableText(
             widget.book['textSummary'],
-            style: TextStyle(fontSize: 16, height: 1.5),
+            style: const TextStyle(fontSize: 16, height: 1.5),
             onSelectionChanged: (selection, cause) {
-              if (selection != null &&
-                  selection.baseOffset != selection.extentOffset) {
+              if (selection.baseOffset != selection.extentOffset) {
                 _showHighlightDialog(selection);
 
               }
@@ -416,8 +415,8 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
 
   Widget _buildAISummary() {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.blue[50],
         borderRadius: BorderRadius.circular(20),
@@ -426,7 +425,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.psychology, color: Colors.blue),
               SizedBox(width: 10),
@@ -440,10 +439,10 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             widget.book['aiGeneratedSummary'],
-            style: TextStyle(fontSize: 16, height: 1.5),
+            style: const TextStyle(fontSize: 16, height: 1.5),
           ),
         ],
       ),
@@ -452,8 +451,8 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
 
   Widget _buildYouTubeSummary() {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.red[50],
         borderRadius: BorderRadius.circular(20),
@@ -462,7 +461,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
 
               SizedBox(width: 10),
@@ -476,7 +475,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           // Container(
           //   height: 200,
           //   color: Colors.grey[300],
@@ -496,8 +495,8 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
 
   Widget _buildMindmapSummary() {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.green[50],
         borderRadius: BorderRadius.circular(20),
@@ -506,7 +505,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.account_tree, color: Colors.green),
               SizedBox(width: 10),
@@ -520,7 +519,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Container(
             height: 200,
             color: Colors.grey[200],
@@ -546,25 +545,25 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Save Highlight"),
+          title: const Text("Save Highlight"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Selected text:"),
-              SizedBox(height: 10),
+              const Text("Selected text:"),
+              const SizedBox(height: 10),
               Text(
                 textController.text.substring(start, end),
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
-              child: Text("Save"),
+              child: const Text("Save"),
               onPressed: () {
                 setState(() {
                   highlights.add(textController.text.substring(start, end));
@@ -581,27 +580,27 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
 
   Widget _buildHighlightsSection() {
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: const EdgeInsets.only(top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Your Highlights",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ListView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: highlights.length,
             itemBuilder: (context, index) {
               return Card(
-                margin: EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
-                  leading: Icon(Icons.format_quote, color: Colors.orange),
+                  leading: const Icon(Icons.format_quote, color: Colors.orange),
                   title: Text(highlights[index]),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () {
                       setState(() {
                         highlights.removeAt(index);
@@ -620,8 +619,8 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
   // Function to build audio player
   Widget _buildAudioPlayer() {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.black87,
         borderRadius: BorderRadius.circular(20),
@@ -629,7 +628,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             "Audio Player",
             style: TextStyle(
               color: Colors.white,
@@ -637,14 +636,14 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Icon(
             isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
             color: Colors.orange,
             size: 60,
           ),
-          SizedBox(height: 10),
-          Text(
+          const SizedBox(height: 10),
+          const Text(
             "Playing: Chapter 1",
             style: TextStyle(color: Colors.white),
           ),
@@ -674,12 +673,12 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       ),
       icon: Icon(icon, color: Colors.white),
       label: Text(
         title,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
     );
   }
@@ -687,14 +686,14 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
   // Function to build reading text
   Widget _buildReadingText() {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.orange[50],
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.orange, width: 2),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -724,7 +723,7 @@ class _BookSummaryPageState extends ConsumerState<BookSummaryPage> {
 class YouTubeVideoWidget extends StatefulWidget {
   final String youtubeUrl;
 
-  const YouTubeVideoWidget({Key? key, required this.youtubeUrl}) : super(key: key);
+  const YouTubeVideoWidget({super.key, required this.youtubeUrl});
 
   @override
   _YouTubeVideoWidgetState createState() => _YouTubeVideoWidgetState();
@@ -739,7 +738,7 @@ class _YouTubeVideoWidgetState extends State<YouTubeVideoWidget> {
     final videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl);
     _controller = YoutubePlayerController(
       initialVideoId: videoId!,
-      flags: YoutubePlayerFlags(
+      flags: const YoutubePlayerFlags(
         autoPlay: false,
         mute: false,
       ),
@@ -751,14 +750,14 @@ class _YouTubeVideoWidgetState extends State<YouTubeVideoWidget> {
     return Column(
       children: [
 
-        SizedBox(height: 10),
-        Container(
+        const SizedBox(height: 10),
+        SizedBox(
           height: 200,
           child: YoutubePlayer(
             controller: _controller,
             showVideoProgressIndicator: true,
             progressIndicatorColor: Colors.red,
-            progressColors: ProgressBarColors(
+            progressColors: const ProgressBarColors(
               playedColor: Colors.red,
               handleColor: Colors.redAccent,
             ),

@@ -5,8 +5,7 @@ import '../../providers/books_collection_provider.dart';
 
 class PlaylistBooksScreen extends ConsumerWidget {
   final BookCollection collection;
-  const PlaylistBooksScreen({Key? key, required this.collection})
-      : super(key: key);
+  const PlaylistBooksScreen({super.key, required this.collection});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +48,7 @@ class PlaylistBooksScreen extends ConsumerWidget {
           : Padding(
               padding: const EdgeInsets.all(12.0),
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 0.65, // Adjusted to make cards taller
                   crossAxisSpacing: 10,
@@ -82,7 +81,7 @@ class PlaylistBooksScreen extends ConsumerWidget {
                               children: [
                                 // Book cover
                                 ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
+                                  borderRadius: const BorderRadius.vertical(
                                       top: Radius.circular(16)),
                                   child: Image.asset(
                                     'assets/${book['coverImage']}',
@@ -122,15 +121,15 @@ class PlaylistBooksScreen extends ConsumerWidget {
                                       onTap: () => showDeleteBookDialog(
                                           context, ref, book),
                                       child: Container(
-                                        padding: EdgeInsets.all(6),
-                                        decoration: BoxDecoration(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: const BoxDecoration(
                                           color: Colors.black45,
                                           borderRadius: BorderRadius.only(
                                             bottomLeft: Radius.circular(16),
                                             topRight: Radius.circular(16),
                                           ),
                                         ),
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.delete_outline,
                                           color: Colors.white,
                                           size: 20,
@@ -152,7 +151,7 @@ class PlaylistBooksScreen extends ConsumerWidget {
                                 children: [
                                   Text(
                                     book['title'] ?? 'Untitled',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
                                       color: Colors.black87,
@@ -160,7 +159,7 @@ class PlaylistBooksScreen extends ConsumerWidget {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  SizedBox(height: 2),
+                                  const SizedBox(height: 2),
                                   Text(
                                     book['author'] ?? 'Unknown Author',
                                     style: TextStyle(

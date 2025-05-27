@@ -4,7 +4,7 @@ import 'package:mini_books/NavBar/nav_bar.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class RazorpayPage extends StatefulWidget {
-  RazorpayPage({super.key, required this.Title});
+  const RazorpayPage({super.key, required this.Title});
   final String Title;
 
   @override
@@ -97,7 +97,7 @@ class _RazorpayPageState extends State<RazorpayPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 10,
@@ -144,7 +144,7 @@ class _RazorpayPageState extends State<RazorpayPage> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF76C7C0),
+                            backgroundColor: const Color(0xFF76C7C0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),

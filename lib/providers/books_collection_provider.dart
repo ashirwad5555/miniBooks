@@ -1,13 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/storage_service.dart';
 
-final bookCollectionsProvider = StateNotifierProvider<BookCollectionsNotifier, List<BookCollection>>((ref) {
-  return BookCollectionsNotifier();
-});
+// final bookCollectionsProvider =
+//     StateNotifierProvider<BookCollectionsNotifier, List<BookCollection>>((ref) {
+//   return BookCollectionsNotifier();
+// });
 
 class BookCollectionsNotifier extends StateNotifier<List<BookCollection>> {
-  BookCollectionsNotifier() : super([]);
+  BookCollectionsNotifier() : super([]) {
+    _initializeState();
+  }
 
-  void addBookToCollection(BookCollection collection, Map<String, dynamic> book) {
+  Future<void> _initializeState() async {
+    final savedCollections = await StorageService.loadBookCollections();
+    state = savedCollections
+        .map((collectionMap) => BookCollection.fromJson(collectionMap))
+        .toList();
+  }
+
+  void addBookToCollection(
+      BookCollection collection, Map<String, dynamic> book) {
     state = [
       for (final col in state)
         if (col.name == collection.name)
@@ -15,25 +27,38 @@ class BookCollectionsNotifier extends StateNotifier<List<BookCollection>> {
         else
           col
     ];
+    _saveState();
   }
 
-  void removeBookFromCollection(BookCollection collection, Map<String, dynamic> book) {
+  void removeBookFromCollection(
+      BookCollection collection, Map<String, dynamic> book) {
     state = [
       for (final col in state)
         if (col.name == collection.name)
-          col.copyWith(books: col.books.where((b) => b['title'] != book['title']).toList())
+          col.copyWith(
+              books:
+                  col.books.where((b) => b['title'] != book['title']).toList())
         else
           col
     ];
+    _saveState();
   }
 
   void createNewCollection(String collectionName) {
     final newCollection = BookCollection(name: collectionName, books: []);
     state = [...state, newCollection];
+    _saveState();
   }
 
   void deleteCollection(String collectionName) {
     state = state.where((col) => col.name != collectionName).toList();
+    _saveState();
+  }
+
+  void _saveState() {
+    final collectionsJson =
+        state.map((collection) => collection.toJson()).toList();
+    StorageService.saveBookCollections(collectionsJson);
   }
 }
 
@@ -49,4 +74,25 @@ class BookCollection {
       books: books ?? this.books,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'books': books,
+    };
+  }
+
+  static BookCollection fromJson(Map<String, dynamic> json) {
+    return BookCollection(
+      name: json['name'],
+      books: (json['books'] as List)
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(),
+    );
+  }
 }
+
+final bookCollectionsProvider =
+    StateNotifierProvider<BookCollectionsNotifier, List<BookCollection>>(
+  (ref) => BookCollectionsNotifier(),
+);

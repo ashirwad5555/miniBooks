@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pay/pay.dart';
 
-import 'payment_configurations.dart' as payment_configurations;
 
 // void main() {
 //   runApp(const PayMaterialApp());

@@ -4,6 +4,8 @@ import 'package:mini_books/Screens/Subscription/paymentGateway/razorpay_payment.
 import 'GooglePay/paySampleApp.dart';
 
 class SubscriptionPage extends StatefulWidget {
+  const SubscriptionPage({super.key});
+
   @override
   _SubscriptionPageState createState() => _SubscriptionPageState();
 }
@@ -20,7 +22,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline, color: Colors.white),
+            icon: const Icon(Icons.help_outline, color: Colors.white),
             onPressed: () {
               // Help/FAQ action
             },
@@ -33,11 +35,11 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Subscription Icon
-            Icon(Icons.card_giftcard, color: Colors.orange, size: 80),
-            SizedBox(height: 20),
+            const Icon(Icons.card_giftcard, color: Colors.orange, size: 80),
+            const SizedBox(height: 20),
 
             // Title
-            Text(
+            const Text(
               'Mini_books',
               style: TextStyle(
                 color: Colors.orange,
@@ -45,20 +47,20 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Trial Offer
-            Text(
+            const Text(
               'Press to continue',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Description
-            Text(
+            const Text(
               'No ads, unlimited offline books, exclusive titles & more.',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -66,7 +68,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Subscription Options
             SubscriptionOption(
@@ -102,7 +104,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               },
             ),
 
-            Spacer(),
+            const Spacer(),
 
             // Start Trial Button
             ElevatedButton(
@@ -115,17 +117,17 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 //     ),
                 //   ),
                 // );
-                Navigator.push(context, MaterialPageRoute(builder: (ctx) => PayMaterialApp()));
+                Navigator.push(context, MaterialPageRoute(builder: (ctx) => const PayMaterialApp()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+              child: const Padding(
+                padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
                 child: Text(
                   'Start my free 14 day trial',
                   style: TextStyle(
@@ -136,14 +138,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Cancel anytime message
-            Text(
+            const Text(
               'Cancel anytime.',
               style: TextStyle(color: Colors.grey),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -159,7 +161,7 @@ class SubscriptionOption extends StatelessWidget {
   final bool isPopular;
   final VoidCallback onTap;
 
-  SubscriptionOption({
+  const SubscriptionOption({super.key, 
     required this.duration,
     required this.price,
     this.discount,
@@ -185,7 +187,7 @@ class SubscriptionOption extends StatelessWidget {
                     ? Border.all(color: Colors.orange, width: 2)
                     : null,
               ),
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -198,7 +200,7 @@ class SubscriptionOption extends StatelessWidget {
                   ),
                   Text(
                     price,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                     ),
@@ -214,14 +216,14 @@ class SubscriptionOption extends StatelessWidget {
               right: -10,
               top: -10,
               child: Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '$discount',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                   ),
@@ -235,12 +237,12 @@ class SubscriptionOption extends StatelessWidget {
               bottom: -10,
               left: 20,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.orange,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
+                child: const Text(
                   'Most Popular',
                   style: TextStyle(
                     color: Colors.white,

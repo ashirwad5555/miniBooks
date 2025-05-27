@@ -10,6 +10,8 @@ import 'category_selector.dart';
 import 'horizontal_scroll_widget.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -25,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _bannerAd = BannerAd(
       adUnitId: "ca-app-pub-6953864367287284/7427671718",
-      request: AdRequest(),
+      request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(onAdLoaded: (_) {
         setState(() {
@@ -51,14 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.book_outlined),
+            icon: const Icon(Icons.book_outlined),
             onPressed: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (ctx) => FavoriteBooksScreen()));
             },
           ),
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => NotificationsPage()));
             },
@@ -70,12 +72,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             isBannerAdReady ? SizedBox(
               height: _bannerAd.size.height.toDouble(),
               width: _bannerAd.size.width.toDouble(),
               child: AdWidget(ad: _bannerAd),
-            ): SizedBox(height: 0,),
+            ): const SizedBox(height: 0,),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
             //   child: TextField(
@@ -89,11 +91,11 @@ class _HomeScreenState extends State<HomeScreen> {
             //     ),
             //   ),
             // ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             HorizontalScrollWidget(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             CategoryBooksWidget(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
             //   child: Text(
@@ -113,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // ),
             // CategorySelector(),
             // BookListModule(),
-            SizedBox(height: 100),
+            const SizedBox(height: 100),
           ],
         ),
       ),

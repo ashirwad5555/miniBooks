@@ -6,7 +6,7 @@ import 'package:mini_books/providers/favorites_provider.dart';
 class BookDetails extends ConsumerStatefulWidget {
   final Map<String, dynamic> bookData;
 
-  const BookDetails({Key? key, required this.bookData}) : super(key: key);
+  const BookDetails({super.key, required this.bookData});
 
   @override
   ConsumerState<BookDetails> createState() => _BookDetailsState();
@@ -48,7 +48,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(Icons.playlist_add),
+            icon: const Icon(Icons.playlist_add),
             onPressed: () {
               _showPlaylistDialog(context, collections);
             },
@@ -209,7 +209,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add to Playlist"),
+          title: const Text("Add to Playlist"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -236,14 +236,14 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                   _showCreatePlaylistDialog(context);
                 },
-                child: Text("Create New Playlist"),
+                child: const Text("Create New Playlist"),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -252,7 +252,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Add to Playlist"),
+              child: const Text("Add to Playlist"),
             ),
           ],
         );
@@ -267,17 +267,17 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Create New Playlist"),
+          title: const Text("Create New Playlist"),
           content: TextField(
             controller: playlistController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: "Enter playlist name",
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -289,7 +289,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Create and Add"),
+              child: const Text("Create and Add"),
             ),
           ],
         );
@@ -303,7 +303,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Playlist or Book"),
+          title: const Text("Delete Playlist or Book"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -334,7 +334,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Delete Book from Playlist"),
+              child: const Text("Delete Book from Playlist"),
             ),
             ElevatedButton(
               onPressed: () {
@@ -343,7 +343,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
-              child: Text("Delete Entire Playlist"),
+              child: const Text("Delete Entire Playlist"),
             ),
           ],
         );

@@ -9,6 +9,8 @@ class BookCollection {
 }
 
 class BookShelfScreen extends StatefulWidget {
+  const BookShelfScreen({super.key});
+
   @override
   _BookShelfScreenState createState() => _BookShelfScreenState();
 }
@@ -34,15 +36,15 @@ class _BookShelfScreenState extends State<BookShelfScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Bookshelf'),
+        title: const Text('My Bookshelf'),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      backgroundColor: Color(0xFAF1EBF1),
+      backgroundColor: const Color(0xFAF1EBF1),
       body: GridView.builder(
-        padding: EdgeInsets.all(16),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 1,
           crossAxisSpacing: 16,
@@ -68,7 +70,7 @@ class _BookShelfScreenState extends State<BookShelfScreen> {
           // TODO: Navigate to collection details
         },
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -79,14 +81,14 @@ class _BookShelfScreenState extends State<BookShelfScreen> {
                   color: collection.color,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.book, color: Colors.white),
+                child: const Icon(Icons.book, color: Colors.white),
               ),
-              Spacer(),
+              const Spacer(),
               Text(
                 collection.name,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 '${collection.bookCount} books',
                 style: TextStyle(color: Colors.grey[600]),
@@ -118,21 +120,21 @@ class _BookShelfScreenState extends State<BookShelfScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Create New Collection'),
+          title: const Text('Create New Collection'),
           content: TextField(
             autofocus: true,
-            decoration: InputDecoration(hintText: 'Collection Name'),
+            decoration: const InputDecoration(hintText: 'Collection Name'),
             onChanged: (value) {
               newCollectionName = value;
             },
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text('Create'),
+              child: const Text('Create'),
               onPressed: () {
                 if (newCollectionName.isNotEmpty) {
                   _addNewCollection(newCollectionName);

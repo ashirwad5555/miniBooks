@@ -20,7 +20,7 @@ class Book {
 class CategoryExplore extends StatelessWidget {
   final String category;
 
-  CategoryExplore({required this.category});
+  CategoryExplore({super.key, required this.category});
 
   // Dummy data for books
   final List<Book> books = [
@@ -53,7 +53,7 @@ class CategoryExplore extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text(category, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(category, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -62,9 +62,9 @@ class CategoryExplore extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.65,
                 crossAxisSpacing: 16,
@@ -90,7 +90,7 @@ class CategoryExplore extends StatelessWidget {
         children: [
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: Image.network(
                 book.coverUrl,
                 fit: BoxFit.cover,
@@ -103,24 +103,24 @@ class CategoryExplore extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   book.title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   book.author,
                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -139,11 +139,11 @@ class CategoryExplore extends StatelessWidget {
   Widget _buildRating(double rating) {
     return Row(
       children: [
-        Icon(Icons.star, size: 16, color: Colors.amber),
-        SizedBox(width: 4),
+        const Icon(Icons.star, size: 16, color: Colors.amber),
+        const SizedBox(width: 4),
         Text(
           rating.toStringAsFixed(1),
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
         ),
       ],
     );
@@ -153,7 +153,7 @@ class CategoryExplore extends StatelessWidget {
     return Row(
       children: [
         Icon(Icons.remove_red_eye, size: 16, color: Colors.grey[600]),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Text(
           '${(views / 1000).toStringAsFixed(1)}k',
           style: TextStyle(color: Colors.grey[600], fontSize: 12),

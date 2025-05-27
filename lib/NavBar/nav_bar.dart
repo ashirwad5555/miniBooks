@@ -7,6 +7,8 @@ import '../Screens/temp/temp_bookShelf.dart';
 
 
 class FluidNavBarDemo extends StatefulWidget {
+  const FluidNavBarDemo({super.key});
+
   @override
   State createState() {
     return _FluidNavBarDemoState();
@@ -28,7 +30,7 @@ class _FluidNavBarDemoState extends State {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: Color(0xFF75B7E1),
+        backgroundColor: const Color(0xFF75B7E1),
         extendBody: true,
         body: _child,
         bottomNavigationBar: FluidNavBar(
@@ -37,23 +39,23 @@ class _FluidNavBarDemoState extends State {
 
             FluidNavBarIcon(
                 icon: Icons.search,
-                backgroundColor: Color(0xFFEC4134),
+                backgroundColor: const Color(0xFFEC4134),
                 extras: {"label": "search"}),
             FluidNavBarIcon(
                 icon: Icons.home_filled,
-                backgroundColor: Color.fromRGBO(245, 148, 92, 1),
+                backgroundColor: const Color.fromRGBO(245, 148, 92, 1),
                 extras: {"label": "home"}),
             FluidNavBarIcon(
-                icon: IconData(0xe3dd, fontFamily: 'MaterialIcons'),
-                backgroundColor: Color(0xFF34A950),
+                icon: const IconData(0xe3dd, fontFamily: 'MaterialIcons'),
+                backgroundColor: const Color(0xFF34A950),
                 extras: {"label": "subscription"}),
             FluidNavBarIcon(
                 icon: Icons.person,
-                backgroundColor: Color(0xFFFCBA02),
+                backgroundColor: const Color(0xFFFCBA02),
                 extras: {"label": "profile"}),
           ],
           onChange: _handleNavigationChange,
-          style: FluidNavBarStyle(iconUnselectedForegroundColor: Colors.white, barBackgroundColor: Color.fromRGBO(103, 163, 217, 0.5)),
+          style: const FluidNavBarStyle(iconUnselectedForegroundColor: Colors.white, barBackgroundColor: Color.fromRGBO(103, 163, 217, 0.5)),
           scaleFactor: 1.5,
           defaultIndex: 1,
           itemBuilder: (icon, item) => Semantics(
@@ -76,7 +78,7 @@ class _FluidNavBarDemoState extends State {
           _child = HomeScreen();
           break;
         case 2:
-          _child = BookShelfScreen();
+          _child = const BookShelfScreen();
           break;
         case 3:
           _child = UserProfile();
@@ -85,7 +87,7 @@ class _FluidNavBarDemoState extends State {
       _child = AnimatedSwitcher(
         switchInCurve: Curves.easeOut,
         switchOutCurve: Curves.easeIn,
-        duration: Duration(milliseconds: 950),
+        duration: const Duration(milliseconds: 950),
         child: _child,
       );
     });

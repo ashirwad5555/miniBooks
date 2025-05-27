@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_upi_india/flutter_upi_india.dart';
 
-void main() => runApp(App());
+void main() => runApp(const App());
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -15,9 +15,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Flutter UPI Pay'),
+          title: const Text('Flutter UPI Pay'),
         ),
-        body: Screen(),
+        body: const Screen(),
       ),
     );
   }
@@ -46,7 +46,7 @@ class _ScreenState extends State<Screen> {
     _amountController.text =
         (Random.secure().nextDouble() * 10).toStringAsFixed(2);
 
-    Future.delayed(Duration(milliseconds: 0), () async {
+    Future.delayed(const Duration(milliseconds: 0), () async {
       _apps = await UpiPay.getInstalledUpiApplications(
           statusType: UpiApplicationDiscoveryAppStatusType.all);
       setState(() {});
@@ -98,7 +98,7 @@ class _ScreenState extends State<Screen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView(
         children: <Widget>[
           _vpa(),
@@ -113,14 +113,14 @@ class _ScreenState extends State<Screen> {
 
   Widget _vpa() {
     return Container(
-      margin: EdgeInsets.only(top: 32),
+      margin: const EdgeInsets.only(top: 32),
       child: Row(
         children: <Widget>[
           Expanded(
             child: TextFormField(
               controller: _upiAddressController,
               enabled: _isUpiEditable,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'address@upi',
                 labelText: 'Receiving UPI Address',
@@ -128,7 +128,7 @@ class _ScreenState extends State<Screen> {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 8),
+            margin: const EdgeInsets.only(left: 8),
             child: IconButton(
               icon: Icon(
                 _isUpiEditable ? Icons.check : Icons.edit,
@@ -147,17 +147,17 @@ class _ScreenState extends State<Screen> {
 
   Widget _vpaError() {
     return Container(
-      margin: EdgeInsets.only(top: 4, left: 12),
+      margin: const EdgeInsets.only(top: 4, left: 12),
       child: Text(
         _upiAddrError!,
-        style: TextStyle(color: Colors.red),
+        style: const TextStyle(color: Colors.red),
       ),
     );
   }
 
   Widget _amount() {
     return Container(
-      margin: EdgeInsets.only(top: 32),
+      margin: const EdgeInsets.only(top: 32),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -165,16 +165,16 @@ class _ScreenState extends State<Screen> {
               controller: _amountController,
               readOnly: true,
               enabled: false,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Amount',
               ),
             ),
           ),
           Container(
-            margin: EdgeInsets.only(left: 8),
+            margin: const EdgeInsets.only(left: 8),
             child: IconButton(
-              icon: Icon(Icons.loop),
+              icon: const Icon(Icons.loop),
               onPressed: _generateAmount,
             ),
           ),
@@ -185,7 +185,7 @@ class _ScreenState extends State<Screen> {
 
   Widget _submitButton() {
     return Container(
-      margin: EdgeInsets.only(top: 32),
+      margin: const EdgeInsets.only(top: 32),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -209,12 +209,12 @@ class _ScreenState extends State<Screen> {
 
   Widget _androidApps() {
     return Container(
-      margin: EdgeInsets.only(top: 32, bottom: 32),
+      margin: const EdgeInsets.only(top: 32, bottom: 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Text(
               'Pay Using',
               style: Theme.of(context).textTheme.bodyLarge,
@@ -228,12 +228,12 @@ class _ScreenState extends State<Screen> {
 
   Widget _iosApps() {
     return Container(
-      margin: EdgeInsets.only(top: 32, bottom: 32),
+      margin: const EdgeInsets.only(top: 32, bottom: 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(bottom: 24),
+            margin: const EdgeInsets.only(bottom: 24),
             child: Text(
               'One of these will be invoked automatically by your phone to '
                   'make a payment',
@@ -241,7 +241,7 @@ class _ScreenState extends State<Screen> {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Text(
               'Detected Installed Apps',
               style: Theme.of(context).textTheme.bodyLarge,
@@ -249,7 +249,7 @@ class _ScreenState extends State<Screen> {
           ),
           if (_apps != null) _discoverableAppsGrid(),
           Container(
-            margin: EdgeInsets.only(top: 12, bottom: 12),
+            margin: const EdgeInsets.only(top: 12, bottom: 12),
             child: Text(
               'Other Supported Apps (Cannot detect)',
               style: Theme.of(context).textTheme.bodyLarge,
@@ -292,7 +292,7 @@ class _ScreenState extends State<Screen> {
       mainAxisSpacing: 4,
       crossAxisSpacing: 4,
       // childAspectRatio: 1.6,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       children: apps
           .map(
             (it) => Material(
@@ -306,7 +306,7 @@ class _ScreenState extends State<Screen> {
               children: <Widget>[
                 it.iconImage(48),
                 Container(
-                  margin: EdgeInsets.only(top: 4),
+                  margin: const EdgeInsets.only(top: 4),
                   alignment: Alignment.center,
                   child: Text(
                     it.upiApplication.getAppName(),

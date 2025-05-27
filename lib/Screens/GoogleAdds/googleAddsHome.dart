@@ -22,7 +22,7 @@ class _GoogleaddshomeState extends State<Googleaddshome> {
     super.initState();
     _bannerAd = BannerAd(
       adUnitId: "ca-app-pub-6953864367287284/7427671718",
-      request: AdRequest(),
+      request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(onAdLoaded: (_) {
         setState(() {
@@ -37,7 +37,7 @@ class _GoogleaddshomeState extends State<Googleaddshome> {
 
     InterstitialAd.load(
       adUnitId: "ca-app-pub-6953864367287284/3281377294",
-      request: AdRequest(),
+      request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
         setState(() {
           _interstitialAd = ad;
@@ -92,10 +92,10 @@ class _GoogleaddshomeState extends State<Googleaddshome> {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 200,),
+          const SizedBox(height: 200,),
           ElevatedButton(onPressed: (){
             _showInterstitialAd();
-          }, child: Text("show interstitial Add")),
+          }, child: const Text("show interstitial Add")),
 
         ],
       ),

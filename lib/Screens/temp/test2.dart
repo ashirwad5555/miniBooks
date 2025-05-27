@@ -6,6 +6,8 @@ import '../../providers/categorySelector_provider.dart';
 import '../BookSummaryPage/book_summary_page.dart';
 
 class CategoryBooksWidget extends ConsumerWidget {
+  const CategoryBooksWidget({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(categoriesProvider);
@@ -17,9 +19,9 @@ class CategoryBooksWidget extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          const SizedBox(height: 10),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               'Top picks for you',
               style: TextStyle(
@@ -53,12 +55,12 @@ class CategoryBooksWidget extends ConsumerWidget {
 
                       ),
                       elevation: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
 
                     ),
                     child: Text(
                       category,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -68,7 +70,7 @@ class CategoryBooksWidget extends ConsumerWidget {
               },
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Horizontal scrollable book list with views and rating
           Expanded(
@@ -98,7 +100,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                           ),
                         );
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 190, // Fixed width for each card
                         child: Card(
                           elevation: 4,
@@ -110,7 +112,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                             children: [
                               // Image section with fixed height and rounded corners
                               ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                                 child: AspectRatio(
                                   aspectRatio: 3 / 3.5, // Maintain a 3:4 aspect ratio for the image
                                   child: Image.network(
@@ -138,7 +140,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                     // Title
                                     Text(
                                       book['title'],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                         color: Colors.black87,
@@ -147,7 +149,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     // Author
                                     Text(
                                       book['author'],
@@ -158,7 +160,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     // Views and Rating Row
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -171,7 +173,7 @@ class CategoryBooksWidget extends ConsumerWidget {
                                               size: 16,
                                               color: Colors.grey[600],
                                             ),
-                                            SizedBox(width: 4),
+                                            const SizedBox(width: 4),
                                             Text(
                                               '${book['views']} views',
                                               style: TextStyle(
@@ -184,12 +186,12 @@ class CategoryBooksWidget extends ConsumerWidget {
                                         // Rating
                                         Row(
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.star,
                                               size: 16,
                                               color: Colors.orange,
                                             ),
-                                            SizedBox(width: 4),
+                                            const SizedBox(width: 4),
                                             Text(
                                               '${book['rating']}/5',
                                               style: TextStyle(

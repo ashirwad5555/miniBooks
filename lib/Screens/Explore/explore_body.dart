@@ -5,7 +5,7 @@ import 'package:mini_books/data/books_data.dart';
 import 'package:mini_books/providers/explore_book_provider.dart';
 
 class ExploreBody extends ConsumerWidget {
-  const ExploreBody({Key? key}) : super(key: key);
+  const ExploreBody({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +30,7 @@ class ExploreBody extends ConsumerWidget {
       body: Column(
         children: [
           // Search box
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Padding(
@@ -297,11 +297,11 @@ class CategoryCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const CategoryCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.bookCount,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

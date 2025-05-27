@@ -5,7 +5,7 @@ import 'genre_model.dart';
 class GenreCard extends StatelessWidget {
   final Genre genre;
 
-  GenreCard({required this.genre});
+  const GenreCard({super.key, required this.genre});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class GenreCard extends StatelessWidget {
         child: Center(
           child: Text(
             genre.name,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.bold,

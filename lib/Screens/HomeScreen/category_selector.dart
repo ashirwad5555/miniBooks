@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CategorySelector extends StatefulWidget {
+  const CategorySelector({super.key});
+
   @override
   _CategorySelectorState createState() => _CategorySelectorState();
 }
@@ -13,7 +15,7 @@ class _CategorySelectorState extends State<CategorySelector> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Container(
+      child: SizedBox(
         height: 40,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -28,7 +30,7 @@ class _CategorySelectorState extends State<CategorySelector> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: selectedIndex == index
                         ? Colors.orange

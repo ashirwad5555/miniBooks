@@ -6,30 +6,32 @@ class NotificationsPage extends StatelessWidget {
     {
       'title': 'New Update Available',
       'description': 'Version 2.0 is now available for download.',
-      'time': DateFormat('jm').format(DateTime.now().subtract(Duration(hours: 1))),
+      'time': DateFormat('jm').format(DateTime.now().subtract(const Duration(hours: 3))),
     },
     {
       'title': 'Account Activity',
       'description': 'Your account was logged in from a new device.',
-      'time': DateFormat('jm').format(DateTime.now().subtract(Duration(hours: 3))),
+      'time': DateFormat('jm').format(DateTime.now().subtract(const Duration(hours: 3))),
     },
     {
       'title': 'Subscription Expiring',
       'description': 'Your subscription will expire in 3 days. Renew now!',
-      'time': DateFormat('jm').format(DateTime.now().subtract(Duration(days: 1))),
+      'time': DateFormat('jm').format(DateTime.now().subtract(const Duration(days: 1))),
     },
     {
       'title': 'Welcome!',
       'description': 'Thank you for signing up! Explore the new features today.',
-      'time': DateFormat('jm').format(DateTime.now().subtract(Duration(days: 2))),
+      'time': DateFormat('jm').format(DateTime.now().subtract(const Duration(days: 2))),
     },
   ];
+
+  NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications'),
+        title: const Text('Notifications'),
         backgroundColor: Colors.orange,
       ),
       body: Padding(
@@ -52,21 +54,21 @@ class NotificationsPage extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         backgroundColor: Colors.orange.shade200,
-                        child: Icon(Icons.notifications, color: Colors.white),
+                        child: const Icon(Icons.notifications, color: Colors.white),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               notification['title']!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               notification['description']!,
                               style: TextStyle(
@@ -74,7 +76,7 @@ class NotificationsPage extends StatelessWidget {
                                 color: Colors.grey[700],
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
                               notification['time']!,
                               style: TextStyle(

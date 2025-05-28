@@ -6,6 +6,8 @@ import 'package:mini_books/Screens/Auth/simple_auth_screen.dart';
 import 'package:mini_books/config/api_config.dart' show ApiConfig;
 import 'package:mini_books/providers/auth_provider.dart'
     show UserNotifier, userProvider;
+import 'package:mini_books/providers/books_collection_provider.dart';
+import 'package:mini_books/providers/favorites_provider.dart';
 import 'package:mini_books/services/api_service.dart' show ApiService;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Subscription/subscription_page.dart';
@@ -189,6 +191,15 @@ class _UserProfileState extends ConsumerState<UserProfile> {
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
+
+    // Clear local collections (optional)
+    await prefs.remove('book_collections');
+    await prefs.remove('favoriteBooks');
+
+    // Reset the providers
+    ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+    ref.read(bookCollectionsProvider.notifier).refreshCollections();
+
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const SimpleAuthScreen()),

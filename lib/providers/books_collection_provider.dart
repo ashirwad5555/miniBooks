@@ -18,6 +18,14 @@ class BookCollectionsNotifier extends StateNotifier<List<BookCollection>> {
         .toList();
   }
 
+  // Add this method to refresh collections from the server
+  Future<void> refreshCollections() async {
+    final savedCollections = await StorageService.loadBookCollections();
+    state = savedCollections
+        .map((collectionMap) => BookCollection.fromJson(collectionMap))
+        .toList();
+  }
+
   void addBookToCollection(
       BookCollection collection, Map<String, dynamic> book) {
     state = [

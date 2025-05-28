@@ -288,6 +288,96 @@ def upload_profile_image():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Add these routes for user favorites
+
+@app.route('/api/users/favorites', methods=['GET'])
+def get_user_favorites():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    user = get_user_by_email(email)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Get favorites from the database
+    favorites = mongo.db.favorites.find_one({'user_id': str(user['_id'])})
+    
+    if favorites and 'books' in favorites:
+        return jsonify({'favorites': favorites['books']}), 200
+    else:
+        return jsonify({'favorites': []}), 200
+
+@app.route('/api/users/favorites', methods=['POST'])
+def update_user_favorites():
+    data = request.json
+    email = data.get('email')
+    books = data.get('books', [])
+    
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    user = get_user_by_email(email)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Update or insert favorites
+    result = mongo.db.favorites.update_one(
+        {'user_id': str(user['_id'])},
+        {'$set': {'books': books, 'updated_at': datetime.now()}},
+        upsert=True
+    )
+    
+    if result.acknowledged:
+        return jsonify({'message': 'Favorites updated successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update favorites'}), 400
+
+# Add these routes for book collections
+
+@app.route('/api/users/collections', methods=['GET'])
+def get_user_collections():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    user = get_user_by_email(email)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Get collections from the database
+    collections = mongo.db.collections.find_one({'user_id': str(user['_id'])})
+    
+    if collections and 'collections' in collections:
+        return jsonify({'collections': collections['collections']}), 200
+    else:
+        return jsonify({'collections': []}), 200
+
+@app.route('/api/users/collections', methods=['POST'])
+def update_user_collections():
+    data = request.json
+    email = data.get('email')
+    collections = data.get('collections', [])
+    
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    user = get_user_by_email(email)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Update or insert collections
+    result = mongo.db.collections.update_one(
+        {'user_id': str(user['_id'])},
+        {'$set': {'collections': collections, 'updated_at': datetime.now()}},
+        upsert=True
+    )
+    
+    if result.acknowledged:
+        return jsonify({'message': 'Collections updated successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to update collections'}), 400
+
 # Run the app
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -3,7 +3,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mini_books/Notifications/notifications.dart';
 import 'package:mini_books/Screens/Collection/saved_books.dart';
 import '../Collection/favorites.dart';
-import '../temp/temp3.dart';
 import 'books_list_module.dart';
 import 'category_books_widget.dart';
 import 'category_selector.dart';

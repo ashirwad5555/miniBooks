@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/config/api_config.dart';
+import 'package:mini_books/providers/books_collection_provider.dart';
+import 'package:mini_books/providers/favorites_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../NavBar/nav_bar.dart';
 
-class SimpleAuthScreen extends StatefulWidget {
+class SimpleAuthScreen extends ConsumerStatefulWidget {
   const SimpleAuthScreen({super.key});
 
   @override
-  State<SimpleAuthScreen> createState() => _SimpleAuthScreenState();
+  ConsumerState<SimpleAuthScreen> createState() => _SimpleAuthScreenState();
 }
 
-class _SimpleAuthScreenState extends State<SimpleAuthScreen>
+class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
     with SingleTickerProviderStateMixin {
   bool isLogin = true;
   bool _obscurePassword = true;
@@ -149,6 +152,11 @@ class _SimpleAuthScreenState extends State<SimpleAuthScreen>
 
         // Navigate to home screen
         if (mounted) {
+            // Refresh favorites and collections after login
+          await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+          await ref.read(bookCollectionsProvider.notifier).refreshCollections();
+
+          
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
           );

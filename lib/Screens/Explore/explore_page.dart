@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../Theme/mytheme.dart';
 
 import 'explore_body.dart';
 
@@ -12,17 +13,27 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: const Text('Category'),
-        backgroundColor: Colors.orange,
+        title: Text(
+          'Category',
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: Colors.black,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
+        iconTheme: IconThemeData(color: colorScheme.onPrimary),
+        flexibleSpace: Container(
+          decoration: AppTheme.getGradientDecoration(),
+        ),
       ),
-
       body: const ExploreBody(),
-
     );
   }
 }

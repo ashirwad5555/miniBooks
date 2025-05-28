@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
+import 'package:mini_books/Theme/mytheme.dart';
 
 import '../../providers/categorySelector_provider.dart';
 
@@ -37,43 +38,85 @@ class CategoryBooksWidget extends ConsumerWidget {
               children: [
                 // Category selection - Keep this compact
                 Container(
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 8), // Reduced vertical margin
-                  height: 36, // Slightly reduced height
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  height: 40,
                   child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
                     itemCount: categories.length,
                     itemBuilder: (context, index) {
                       final category = categories[index];
                       final isSelected = category == selectedCategory;
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ref.read(selectedCategoryProvider.notifier).state =
-                                category;
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                isSelected ? Colors.orange : Colors.black87,
-                            foregroundColor:
-                                isSelected ? Colors.black87 : Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                        padding: const EdgeInsets.only(right: 10.0),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              ref
+                                  .read(selectedCategoryProvider.notifier)
+                                  .state = category;
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                isSelected
+                                    ? AppTheme.gradientStart
+                                    : Colors.white,
+                              ),
+                              foregroundColor: MaterialStateProperty.all(
+                                isSelected ? Colors.white : Colors.black87,
+                              ),
+                              elevation: MaterialStateProperty.all(
+                                isSelected ? 2 : 0,
+                              ),
+                              shadowColor: MaterialStateProperty.all(
+                                isSelected
+                                    ? AppTheme.gradientStart.withOpacity(0.4)
+                                    : Colors.transparent,
+                              ),
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 0),
+                              ),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(
+                                    color: isSelected
+                                        ? Colors.transparent
+                                        : Colors.grey.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith((states) {
+                                if (states.contains(MaterialState.pressed)) {
+                                  return AppTheme.gradientStart
+                                      .withOpacity(0.1);
+                                }
+                                if (states.contains(MaterialState.hovered)) {
+                                  return AppTheme.gradientStart
+                                      .withOpacity(0.05);
+                                }
+                                return null;
+                              }),
                             ),
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 8),
-                          ),
-                          child: Text(
-                            category
-                                .trim()
-                                .replaceAll(RegExp(r'[0-9-]'), '')
-                                .replaceFirst(RegExp(r'^\.+'), '')
-                                .trim(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                            child: Text(
+                              category
+                                  .trim()
+                                  .replaceAll(RegExp(r'[0-9-]'), '')
+                                  .replaceFirst(RegExp(r'^\.+'), '')
+                                  .trim(),
+                              style: TextStyle(
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
+                                fontSize: 14,
+                                letterSpacing: 0.2,
+                              ),
                             ),
                           ),
                         ),
@@ -131,8 +174,9 @@ class CategoryBooksWidget extends ConsumerWidget {
                                     Expanded(
                                       flex: 3,
                                       child: ClipRRect(
-                                        borderRadius: const BorderRadius.vertical(
-                                            top: Radius.circular(16)),
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                                top: Radius.circular(16)),
                                         child: Image.asset(
                                           'assets/${book['coverImage']}',
                                           width: double.infinity,

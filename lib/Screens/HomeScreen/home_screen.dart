@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mini_books/Notifications/notifications.dart';
+import 'package:mini_books/Theme/mytheme.dart';
 import '../Collection/favorites.dart';
 import 'category_books_widget.dart';
 import 'horizontal_scroll_widget.dart';
@@ -13,13 +14,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   late BannerAd _bannerAd;
   bool isBannerAdReady = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _bannerAd = BannerAd(
       adUnitId: "ca-app-pub-6953864367287284/7427671718",
@@ -39,78 +38,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     // Access current theme
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mini-Books", style: theme.textTheme.headlineLarge,),
-        // backgroundColor: Color.fromRGBO(64, 64, 176, 0.68),
-        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: AppTheme.getGradientDecoration(),
+        ),
+        title: Text(
+          "Mini-Books",
+          style: theme.textTheme.headlineMedium?.copyWith(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.book_outlined),
+            icon: const Icon(Icons.book_outlined, color: Colors.black),
             onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => const FavoriteBooksScreen()));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) => const FavoriteBooksScreen()));
             },
           ),
           IconButton(
-            icon: const Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications, color: Colors.black),
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => NotificationsPage()));
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (ctx) => NotificationsPage()));
             },
           ),
         ],
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-            isBannerAdReady ? SizedBox(
-              height: _bannerAd.size.height.toDouble(),
-              width: _bannerAd.size.width.toDouble(),
-              child: AdWidget(ad: _bannerAd),
-            ): const SizedBox(height: 0,),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: TextField(
-            //     decoration: InputDecoration(
-            //       hintText: 'Search',
-            //       prefixIcon: Icon(Icons.search),
-            //       suffixIcon: Icon(Icons.mic),
-            //       border: OutlineInputBorder(
-            //         borderRadius: BorderRadius.circular(30),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            const SizedBox(height: 16),
+            // Ad banner with improved styling
+            if (isBannerAdReady)
+              Container(
+                width: double.infinity,
+                height: _bannerAd.size.height.toDouble(),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.shadow.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: AdWidget(ad: _bannerAd),
+              ),               
+          
+            // Horizontal scroll widget with books
             const HorizontalScrollWidget(),
-            const SizedBox(height: 16),
+
+            // Section title for book categories
+            
+
+            // Category books widget
             const CategoryBooksWidget(),
-            const SizedBox(height: 16),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: Text(
-            //     "You might like this",
-            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            //   ),
-            // ),
-            // CategorySelector(),
-            // BookListModule(),
-            // SizedBox(height: 16),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: Text(
-            //     "You might like this",
-            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            //   ),
-            // ),
-            // CategorySelector(),
-            // BookListModule(),
+
             const SizedBox(height: 100),
           ],
         ),

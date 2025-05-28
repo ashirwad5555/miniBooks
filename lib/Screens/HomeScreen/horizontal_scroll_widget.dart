@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
+import '../../Theme/mytheme.dart';
 
 // Static top books data
 final List<Map<String, dynamic>> staticTopBooks = [
-    {
+  {
     "title": "10-Minute Toughness",
     "author": "",
     "coverImage": "path/to/default_image.png",
@@ -255,7 +256,6 @@ final List<Map<String, dynamic>> staticTopBooks = [
     ],
     "main_tag": "Miscellaneous"
   },
- 
 ];
 
 class HorizontalScrollWidget extends ConsumerStatefulWidget {
@@ -267,7 +267,7 @@ class HorizontalScrollWidget extends ConsumerStatefulWidget {
 
 class _HorizontalScrollWidgetState
     extends ConsumerState<HorizontalScrollWidget> {
-  final PageController _pageController = PageController(viewportFraction: 0.85);
+  final PageController _pageController = PageController(viewportFraction: 0.9);
   Timer? _autoScrollTimer;
   int _currentPage = 0;
 
@@ -278,7 +278,7 @@ class _HorizontalScrollWidgetState
   }
 
   void _startAutoScroll() {
-    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (_pageController.hasClients) {
         _currentPage++;
         if (_currentPage >= staticTopBooks.length) {
@@ -286,8 +286,8 @@ class _HorizontalScrollWidgetState
         }
         _pageController.animateToPage(
           _currentPage,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutQuint,
         );
       }
     });
@@ -295,10 +295,13 @@ class _HorizontalScrollWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       children: [
         SizedBox(
-          height: 240,
+          height: 250,
           child: PageView.builder(
             controller: _pageController,
             itemCount: staticTopBooks.length,
@@ -319,7 +322,7 @@ class _HorizontalScrollWidgetState
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 3.0, vertical: 20.0),
+                      horizontal: 6.0, vertical: 24.0),
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -331,81 +334,101 @@ class _HorizontalScrollWidgetState
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: colorScheme.shadow.withOpacity(0.15),
                             spreadRadius: 0,
-                            blurRadius: 5,
-                            offset: const Offset(0, 2),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         child: Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Color(0xFFFF8A65),
-                                Color(0xFFFF5722),
+                                AppTheme.gradientStart.withOpacity(0.9),
+                                AppTheme.gradientEnd.withOpacity(0.9),
                               ],
                             ),
                           ),
                           child: Row(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Hero(
-                                  tag: 'book-cover-${book['title']}',
-                                  child: Container(
-                                    width: 120,
-                                    height: 180,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          spreadRadius: 0,
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset(
-                                        'assets/${book['coverImage']}',
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          print(
-                                              'Failed to load image: assets/${book['coverImage']}');
-                                          return Container(
-                                            color: Colors.grey[300],
-                                            child: Icon(
-                                              Icons.book,
-                                              size: 40,
-                                              color: Colors.grey[600],
-                                            ),
-                                          );
-                                        },
+                              Hero(
+                                tag: 'book-cover-${book['title']}',
+                                child: Container(
+                                  width: 130,
+                                  height: 200,
+                                  margin: const EdgeInsets.all(10.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        spreadRadius: 0,
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
                                       ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.asset(
+                                      'assets/${book['coverImage']}',
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: colorScheme.surfaceContainer,
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.book,
+                                                size: 40,
+                                                color: colorScheme.primary,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Text(
+                                                  book['title'],
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 3,
+                                                  style: theme
+                                                      .textTheme.labelSmall
+                                                      ?.copyWith(
+                                                    color: colorScheme
+                                                        .onSurfaceVariant,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0,
+                                    vertical: 16.0,
+                                  ),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -413,33 +436,61 @@ class _HorizontalScrollWidgetState
                                     children: [
                                       Text(
                                         book['title'],
-                                        style: TextStyle(
-                                          fontSize: 24,
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                          color: Colors
+                                              .black, // Changed from white to black
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white,
                                           height: 1.2,
                                           shadows: [
-                                            Shadow(
-                                              offset: const Offset(0, 1),
-                                              blurRadius: 2,
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                            ),
+                                            // Removed shadows as they're not needed on dark text
+                                            // Shadow removed
                                           ],
                                         ),
-                                        maxLines: 2,
+                                        maxLines: 3,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(height: 8),
+                                      const SizedBox(height: 12),
                                       Text(
-                                        book['author'] ?? "Unknown Author",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white.withOpacity(0.9),
+                                        book['author'].isEmpty
+                                            ? "Unknown Author"
+                                            : book['author'],
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: Colors.black.withOpacity(
+                                              0.7), // Changed from white to black with opacity
                                           fontStyle: FontStyle.italic,
                                         ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 14),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 5,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.black.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            // Using constraints to ensure the container doesn't take too much space
+                                            constraints: const BoxConstraints(maxWidth: 120),
+                                            child: Text(
+                                              book['main_tag'] ?? 'Uncategorized',
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              maxLines: 2, // Allow up to 2 lines
+                                              overflow: TextOverflow.ellipsis, // Use ellipsis for overflow
+                                              textAlign: TextAlign.center, // Center the text
+                                            ),
+                                          ),
+                                         
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -456,24 +507,17 @@ class _HorizontalScrollWidgetState
             },
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         SmoothPageIndicator(
           controller: _pageController,
           count: staticTopBooks.length,
-          effect: CustomizableEffect(
+          effect: WormEffect(
+            dotHeight: 8,
+            dotWidth: 8,
             spacing: 8,
-            dotDecoration: DotDecoration(
-              width: 8,
-              height: 8,
-              color: Colors.grey.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            activeDotDecoration: DotDecoration(
-              width: 24,
-              height: 8,
-              color: const Color(0xFFFF5722),
-              borderRadius: BorderRadius.circular(4),
-            ),
+            activeDotColor: colorScheme.primary,
+            dotColor: colorScheme.primary.withOpacity(0.2),
+            radius: 4,
           ),
         ),
       ],

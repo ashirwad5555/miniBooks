@@ -1,5 +1,6 @@
 import 'package:fluid_bottom_nav_bar/fluid_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:mini_books/Screens/Collection/bookShelf.dart';
 import 'package:mini_books/Screens/HomeScreen/home_screen.dart';
 import '../Screens/Explore/explore_page.dart';
 import '../Screens/Profile/user_profile.dart';

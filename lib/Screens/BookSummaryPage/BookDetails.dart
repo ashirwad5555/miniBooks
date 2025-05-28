@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/providers/books_collection_provider.dart';
 import 'package:mini_books/providers/favorites_provider.dart';
+import '../../Theme/mytheme.dart';
 
 class BookDetails extends ConsumerStatefulWidget {
   final Map<String, dynamic> bookData;
@@ -13,11 +14,10 @@ class BookDetails extends ConsumerStatefulWidget {
 }
 
 class _BookDetailsState extends ConsumerState<BookDetails> {
-  // Now you can use ref throughout your code
   String? selectedCollection;
-  String? selectedCollectionName; // Default playlist label
+  String? selectedCollectionName;
   String selectedOption = "";
-  String selectedSummaryType = "Text"; // Default summary type
+  String selectedSummaryType = "Text";
   bool isPlaying = false;
   List<String> highlights = [];
   TextEditingController textController = TextEditingController();
@@ -29,39 +29,40 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
   Widget build(BuildContext context) {
     final favoriteBooks = ref.watch(favoriteBooksProvider);
     final collections = ref.watch(bookCollectionsProvider);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     final isBookFavorite = favoriteBooks.contains(widget.bookData);
-    // Define a color palette
-    const Color primaryColor = Color(0xFF0D47A1); // Deep Blue
-    const Color accentColor = Color(0xFF42A5F5); // Light Blue
-    const Color backgroundColor = Color(0xFFF5F5F5); // Light Grey
-    const Color textColor = Color(0xFF212121); // Dark Grey
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
         title: Text(
           widget.bookData['title'] ?? 'Book Details',
-          style: const TextStyle(color: Colors.white),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: Colors
+                .black, // Changed to black instead of colorScheme.onPrimary
+          ),
         ),
-        backgroundColor: primaryColor,
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black), // Changed to black
+        flexibleSpace: Container(
+          decoration: AppTheme.getGradientDecoration(),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.playlist_add),
+            icon: const Icon(
+              Icons.playlist_add,
+              color: Colors.black, // Changed to black
+            ),
             onPressed: () {
               _showPlaylistDialog(context, collections);
             },
           ),
-          // IconButton(
-          //   icon: Icon(Icons.delete),
-          //   onPressed: () {
-          //     _showDeleteDialog(context, collections);
-          //   },
-          // ),
           IconButton(
             icon: Icon(
               isBookFavorite ? Icons.bookmark : Icons.bookmark_border,
+              color: Colors.black, // Changed to black
             ),
             onPressed: () {
               final notifier = ref.read(favoriteBooksProvider.notifier);
@@ -78,24 +79,51 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cover Image
-            Container(
-              color: Colors.grey[200],
-              child: Image.asset(
-                'assets/${widget.bookData['coverImage']}',
-                width: double.infinity,
-                height: 300,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 300,
-                  color: Colors.grey[300],
-                  child: const Icon(
-                    Icons.book,
-                    size: 100,
-                    color: Colors.grey,
+            // Cover Image with gradient overlay
+            Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.surface,
+                        colorScheme.surfaceContainer,
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Image.asset(
+                    'assets/${widget.bookData['coverImage']}',
+                    width: double.infinity,
+                    height: 300,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 300,
+                      color: colorScheme.surfaceContainer,
+                      child: Icon(
+                        Icons.book,
+                        size: 100,
+                        color: colorScheme.primary.withOpacity(0.5),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                // Gradient overlay for better text readability
+                Container(
+                  height: 300,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        colorScheme.surface.withOpacity(0.3),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             // Content Section
@@ -107,10 +135,8 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   // Title
                   Text(
                     widget.bookData['title'] ?? 'Unknown Title',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -119,10 +145,9 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   if (widget.bookData['author']?.isNotEmpty == true)
                     Text(
                       'By ${widget.bookData['author']}',
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontStyle: FontStyle.italic,
-                        color: textColor,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   const SizedBox(height: 16),
@@ -137,24 +162,50 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                           .map((tag) => Chip(
                                 label: Text(
                                   tag,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: colorScheme.onPrimary,
                                   ),
                                 ),
-                                backgroundColor: accentColor,
+                                backgroundColor: colorScheme.primary,
+                                side: BorderSide.none,
                               ))
                           .toList(),
                     ),
                   const SizedBox(height: 24),
 
                   // AI Generated Summaries Header
-                  const Text(
-                    'AI Generated Summaries',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          colorScheme.primaryContainer,
+                          colorScheme.tertiaryContainer,
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          color: colorScheme.primary,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'AI Generated Summaries',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -168,24 +219,39 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       elevation: 4,
+                      color: colorScheme.surface,
+                      surfaceTintColor: colorScheme.primaryContainer,
                       child: ExpansionTile(
-                        iconColor: primaryColor,
+                        iconColor: colorScheme.primary,
+                        collapsedIconColor: colorScheme.primary,
+                        tilePadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         title: Text(
                           widget.bookData['aiGeneratedSummary'][index]['title'],
-                          style: const TextStyle(
+                          style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         children: [
-                          Padding(
+                          Container(
+                            width: double.infinity,
                             padding: const EdgeInsets.all(16.0),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surfaceContainer,
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(12),
+                                bottomRight: Radius.circular(12),
+                              ),
+                            ),
                             child: Text(
                               widget.bookData['aiGeneratedSummary'][index]
                                   ['content'],
-                              style: const TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                height: 1.6,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -204,46 +270,88 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
 
   void _showPlaylistDialog(
       BuildContext context, List<BookCollection> collections) {
-    final bookCollections = ref.watch(bookCollectionsProvider);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Add to Playlist"),
+          backgroundColor: colorScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "Add to Playlist",
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DropdownButton<String>(
-                hint: Text(
-                  selectedCollection ?? "Select a playlist",
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colorScheme.outline),
                 ),
-                value: selectedCollection,
-                items: collections.map((collection) {
-                  return DropdownMenuItem<String>(
-                    value: collection.name,
-                    child: Text(collection.name),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedCollection = newValue;
-                    // selectedPlaylistName = (value).toString();
-                  });
-                },
+                child: DropdownButton<String>(
+                  hint: Text(
+                    selectedCollection ?? "Select a playlist",
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  value: selectedCollection,
+                  isExpanded: true,
+                  underline: Container(),
+                  items: collections.map((collection) {
+                    return DropdownMenuItem<String>(
+                      value: collection.name,
+                      child: Text(
+                        collection.name,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedCollection = newValue;
+                    });
+                  },
+                ),
               ),
-              TextButton(
+              const SizedBox(height: 16),
+              TextButton.icon(
                 onPressed: () {
                   Navigator.of(context).pop();
                   _showCreatePlaylistDialog(context);
                 },
-                child: const Text("Create New Playlist"),
+                icon: Icon(
+                  Icons.add,
+                  color: colorScheme.primary,
+                ),
+                label: Text(
+                  "Create New Playlist",
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: colorScheme.primary,
+                  ),
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -252,6 +360,10 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+              ),
               child: const Text("Add to Playlist"),
             ),
           ],
@@ -262,22 +374,54 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
 
   void _showCreatePlaylistDialog(BuildContext context) {
     final TextEditingController playlistController = TextEditingController();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Create New Playlist"),
+          backgroundColor: colorScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "Create New Playlist",
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
           content: TextField(
             controller: playlistController,
-            decoration: const InputDecoration(
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+            decoration: InputDecoration(
               hintText: "Enter playlist name",
+              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              filled: true,
+              fillColor: colorScheme.surfaceContainer,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: colorScheme.outline),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: colorScheme.primary, width: 2),
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -289,6 +433,10 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+              ),
               child: const Text("Create and Add"),
             ),
           ],
@@ -299,30 +447,59 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
 
   void _showDeleteDialog(
       BuildContext context, List<BookCollection> collections) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Delete Playlist or Book"),
+          backgroundColor: colorScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "Delete Playlist or Book",
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: colorScheme.onSurface,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DropdownButton<String>(
-                hint: Text(
-                  selectedCollection ?? "Select a playlist",
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colorScheme.outline),
                 ),
-                value: selectedCollection,
-                items: collections.map((collection) {
-                  return DropdownMenuItem<String>(
-                    value: collection.name,
-                    child: Text(collection.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCollection = value;
-                  });
-                },
+                child: DropdownButton<String>(
+                  hint: Text(
+                    selectedCollection ?? "Select a playlist",
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  value: selectedCollection,
+                  isExpanded: true,
+                  underline: Container(),
+                  items: collections.map((collection) {
+                    return DropdownMenuItem<String>(
+                      value: collection.name,
+                      child: Text(
+                        collection.name,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCollection = value;
+                    });
+                  },
+                ),
               ),
             ],
           ),
@@ -334,6 +511,10 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.error,
+                foregroundColor: colorScheme.onError,
+              ),
               child: const Text("Delete Book from Playlist"),
             ),
             ElevatedButton(
@@ -343,6 +524,10 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.error,
+                foregroundColor: colorScheme.onError,
+              ),
               child: const Text("Delete Entire Playlist"),
             ),
           ],

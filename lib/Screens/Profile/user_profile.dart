@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Replace provider with riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mini_books/Screens/Auth/simple_auth_screen.dart';
 import 'package:mini_books/config/api_config.dart' show ApiConfig;
@@ -11,7 +11,8 @@ import 'package:mini_books/providers/favorites_provider.dart';
 import 'package:mini_books/services/api_service.dart' show ApiService;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Subscription/subscription_page.dart';
-import 'dart:convert'; // Add this import at the top of the file
+import 'dart:convert';
+import '../../Theme/mytheme.dart';
 
 class UserProfile extends ConsumerStatefulWidget {
   const UserProfile({super.key});
@@ -105,9 +106,11 @@ class _UserProfileState extends ConsumerState<UserProfile> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load profile: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load profile: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -117,12 +120,11 @@ class _UserProfileState extends ConsumerState<UserProfile> {
     _contactController.text = userData['contactNo'] ?? '';
   }
 
-  // Add this method to handle image picking
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 70, // Reduce image size for faster upload
+      imageQuality: 70,
       maxWidth: 500,
     );
 
@@ -132,22 +134,16 @@ class _UserProfileState extends ConsumerState<UserProfile> {
       });
 
       try {
-        // Show loading indicator
         setState(() {
           _isLoading = true;
         });
 
-        // Convert image to base64
         String base64Image = await imageToBase64(pickedImage.path);
-
-        // Call API service to upload the image
         final result =
             await ApiService.uploadProfileImage(userData['email'], base64Image);
 
         if (result != null && result.containsKey('profile_image')) {
           final String imageUrl = result['profile_image'];
-
-          // Make sure the URL is properly formatted with the base URL
           final String fullImageUrl = imageUrl.startsWith('http')
               ? imageUrl
               : '${ApiConfig.baseUrl}$imageUrl';
@@ -157,22 +153,25 @@ class _UserProfileState extends ConsumerState<UserProfile> {
             userData['profile_image'] = fullImageUrl;
           });
 
-          // Update SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('profileImage', fullImageUrl);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile image updated successfully')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Profile image updated successfully')),
+            );
+          }
         } else {
           throw Exception("Invalid response from server");
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload image: ${e.toString()}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to upload image: ${e.toString()}')),
+          );
+        }
       } finally {
-        // Hide loading indicator
         setState(() {
           _isLoading = false;
         });
@@ -180,242 +179,453 @@ class _UserProfileState extends ConsumerState<UserProfile> {
     }
   }
 
-  // Add this helper function to convert image to base64
   Future<String> imageToBase64(String imagePath) async {
     File imageFile = File(imagePath);
     List<int> imageBytes = await imageFile.readAsBytes();
     return base64Encode(imageBytes);
   }
 
-  // Add this to any screen where you want to allow logout
   Future<void> _logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
 
-    // Clear local collections (optional)
     await prefs.remove('book_collections');
     await prefs.remove('favoriteBooks');
 
-    // Reset the providers
     ref.read(favoriteBooksProvider.notifier).refreshFavorites();
     ref.read(bookCollectionsProvider.notifier).refreshCollections();
 
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const SimpleAuthScreen()),
-    );
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const SimpleAuthScreen()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Listen to auth state changes
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     final userState = ref.watch(userProvider);
     final isAuthenticated = userState['isAuthenticated'];
 
-    // If not authenticated, redirect to login
     if (!isAuthenticated && !_isLoading) {
-      // You may want to navigate to login screen here
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Navigator.of(context).pushReplacementNamed('/login');
+        // Navigate to login if needed
       });
     }
 
     return Stack(
       children: [
         Scaffold(
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
-            title: const Text('User Profile'),
-            backgroundColor: Colors.orange,
+            title: Text(
+              'My Profile',
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
             actions: [
-              IconButton(
-                icon: Icon(_isEditing ? Icons.save_outlined : Icons.edit),
-                onPressed: () {
-                  setState(() {
-                    if (_isEditing) {
-                      if (_formKey.currentState!.validate()) {
-                        _saveProfile();
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton(
+                  icon: Icon(
+                    _isEditing ? Icons.save_outlined : Icons.edit,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      if (_isEditing) {
+                        if (_formKey.currentState!.validate()) {
+                          _saveProfile();
+                        }
                       }
-                    }
-                    _isEditing = !_isEditing;
-                  });
-                },
+                      _isEditing = !_isEditing;
+                    });
+                  },
+                ),
               ),
             ],
+            flexibleSpace: Container(
+              decoration: AppTheme.getGradientDecoration(),
+            ),
           ),
-          backgroundColor: const Color(0xF1FFD8BB),
           body: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Stack(
-                              children: [
-                                CircleAvatar(
-                                  radius: 70,
-                                  backgroundImage: _profileImage != null
-                                      ? FileImage(_profileImage!)
-                                      : (_imageUrl != null &&
-                                              _imageUrl!.isNotEmpty
-                                          ? NetworkImage(_imageUrl!
-                                                  .startsWith('http')
-                                              ? _imageUrl!
-                                              : '${ApiConfig.baseUrl}${_imageUrl!}')
-                                          : const NetworkImage(
-                                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_3PTTNMSlcllsWjg0uRZs-JUJfS2LmZAwwA&s")),
-                                  onBackgroundImageError: (e, stackTrace) {
-                                    print('Error loading profile image: $e');
-                                    // Handle the error by showing a default image
-                                  },
-                                ),
-                                if (_isEditing)
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      // Profile header with gradient background
+                      Container(
+                        decoration: AppTheme.getGradientDecoration(),
+                        padding: const EdgeInsets.only(top: 90, bottom: 20),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 4,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.2),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
                                     child: CircleAvatar(
-                                      backgroundColor: Colors.orangeAccent,
-                                      child: IconButton(
-                                        icon: const Icon(Icons.camera_alt,
-                                            color: Colors.white),
-                                        onPressed: _pickImage,
+                                      radius: 70,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: _profileImage != null
+                                          ? FileImage(_profileImage!)
+                                          : (_imageUrl != null &&
+                                                  _imageUrl!.isNotEmpty
+                                              ? NetworkImage(_imageUrl!
+                                                      .startsWith('http')
+                                                  ? _imageUrl!
+                                                  : '${ApiConfig.baseUrl}${_imageUrl!}')
+                                              : const NetworkImage(
+                                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_3PTTNMSlcllsWjg0uRZs-JUJfS2LmZAwwA&s")),
+                                      onBackgroundImageError: (e, stackTrace) {
+                                        print(
+                                            'Error loading profile image: $e');
+                                      },
+                                    ),
+                                  ),
+                                  if (_isEditing)
+                                    GestureDetector(
+                                      onTap: _pickImage,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: 18,
+                                          backgroundColor:
+                                              AppTheme.gradientStart,
+                                          child: const Icon(
+                                            Icons.camera_alt,
+                                            color: Colors.white,
+                                            size: 18,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          _buildInfoTile('User ID',
-                              userData['_id']?.toString() ?? '', Icons.badge,
-                              editable: false),
-                          _buildInfoTile(
-                              'Name', userData['name'] ?? '', Icons.person,
-                              controller: _nameController),
-                          _buildInfoTile(
-                              'Email', userData['email'] ?? '', Icons.email,
-                              controller: _emailController,
-                              editable: false), // Email should not be editable
-                          _buildInfoTile('Contact No',
-                              userData['contactNo'] ?? '', Icons.phone,
-                              controller: _contactController),
-
-                          // Subscription status
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Subscription Status',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: userData['is_premium']
-                                        ? Colors.amber.withOpacity(0.2)
-                                        : Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: ListTile(
-                                    leading: Icon(
-                                      userData['is_premium']
-                                          ? Icons.star
-                                          : Icons.star_border,
-                                      color: userData['is_premium']
-                                          ? Colors.amber
-                                          : Colors.grey,
-                                    ),
-                                    title: Text(
-                                      userData['is_premium']
-                                          ? 'Premium User'
-                                          : 'Free User',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: userData['is_premium']
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                    subtitle: userData['premium_until'] != null
-                                        ? Text(
-                                            'Premium until: ${userData['premium_until'].toString().split('T')[0]}')
-                                        : null,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          // Subscription button
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context)
-                                    .push(
-                                  MaterialPageRoute(
-                                    builder: (ctx) => const SubscriptionPage(),
-                                  ),
-                                )
-                                    .then((_) async {
-                                  // Refresh user data when returning from subscription page
-                                  await ref
-                                      .read(userProvider.notifier)
-                                      .checkAuthStatus();
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
+                                ],
                               ),
-                              child: Text(
-                                userData['is_premium']
-                                    ? "Manage Subscription"
-                                    : "Become a Premium User",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
+                              const SizedBox(height: 15),
+                              Text(
+                                userData['name'] ?? 'User',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.white.withOpacity(0.5),
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 5,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
+                              Text(
+                                userData['email'] ?? 'email@example.com',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.black.withOpacity(0.7),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                          Center(
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  _logout(context);
-                                },
-                                child: const Text("Logout")),
-                          ),
-                          const SizedBox(height: 100),
-                        ],
+                        ),
                       ),
-                    ),
+
+                      // Profile info form
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // User info section
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 20.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        'Personal Information',
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                          color: AppTheme.gradientStart,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const Divider(height: 1),
+                                    _buildInfoTile(
+                                      'User ID',
+                                      userData['_id']?.toString() ?? '',
+                                      Icons.badge,
+                                      theme,
+                                      colorScheme,
+                                      editable: false,
+                                    ),
+                                    _buildInfoTile(
+                                      'Name',
+                                      userData['name'] ?? '',
+                                      Icons.person,
+                                      theme,
+                                      colorScheme,
+                                      controller: _nameController,
+                                    ),
+                                    _buildInfoTile(
+                                      'Email',
+                                      userData['email'] ?? '',
+                                      Icons.email,
+                                      theme,
+                                      colorScheme,
+                                      controller: _emailController,
+                                      editable: false,
+                                    ),
+                                    _buildInfoTile(
+                                      'Contact No',
+                                      userData['contactNo'] ?? '',
+                                      Icons.phone,
+                                      theme,
+                                      colorScheme,
+                                      controller: _contactController,
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Subscription info section
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 20.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Text(
+                                        'Subscription',
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                          color: AppTheme.gradientStart,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const Divider(height: 1),
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: userData['is_premium']
+                                                      ? Colors.amber
+                                                          .withOpacity(0.1)
+                                                      : Colors.grey
+                                                          .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: Icon(
+                                                  userData['is_premium']
+                                                      ? Icons.star
+                                                      : Icons.star_border,
+                                                  color: userData['is_premium']
+                                                      ? Colors.amber
+                                                      : Colors.grey,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      userData['is_premium']
+                                                          ? 'Premium User'
+                                                          : 'Free User',
+                                                      style: theme
+                                                          .textTheme.titleMedium
+                                                          ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: userData[
+                                                                'is_premium']
+                                                            ? Colors.amber[700]
+                                                            : colorScheme
+                                                                .onSurface,
+                                                      ),
+                                                    ),
+                                                    if (userData[
+                                                            'premium_until'] !=
+                                                        null)
+                                                      Text(
+                                                        'Premium until: ${userData['premium_until'].toString().split('T')[0]}',
+                                                        style: theme.textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                          color: colorScheme
+                                                              .onSurfaceVariant,
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 20),
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .push(
+                                                  MaterialPageRoute(
+                                                    builder: (ctx) =>
+                                                        const SubscriptionPage(),
+                                                  ),
+                                                )
+                                                    .then((_) async {
+                                                  await ref
+                                                      .read(
+                                                          userProvider.notifier)
+                                                      .checkAuthStatus();
+                                                });
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    userData['is_premium']
+                                                        ? Colors.amber
+                                                        : AppTheme
+                                                            .gradientStart,
+                                                foregroundColor:
+                                                    userData['is_premium']
+                                                        ? Colors.black
+                                                        : Colors.white,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 15),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                elevation: 4,
+                                              ),
+                                              child: Text(
+                                                userData['is_premium']
+                                                    ? "Manage Subscription"
+                                                    : "Become a Premium User",
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Logout button
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 40.0),
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.logout),
+                                  label: const Text("Logout"),
+                                  onPressed: () => _logout(context),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red.shade100,
+                                    foregroundColor: Colors.red.shade700,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    elevation: 2,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
         ),
         if (_isLoading)
           Container(
             color: Colors.black.withOpacity(0.5),
-            child: const Center(
+            child: Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppTheme.gradientStart),
               ),
             ),
           ),
@@ -423,57 +633,96 @@ class _UserProfileState extends ConsumerState<UserProfile> {
     );
   }
 
-  Widget _buildInfoTile(String label, String value, IconData icon,
-      {bool editable = true, TextEditingController? controller}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w600,
-            ),
+  Widget _buildInfoTile(
+    String label,
+    String value,
+    IconData icon,
+    ThemeData theme,
+    ColorScheme colorScheme, {
+    bool editable = true,
+    TextEditingController? controller,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.shade200,
+            width: 1,
           ),
-          const SizedBox(height: 4),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            child: ListTile(
-              leading: Icon(icon, color: Colors.orangeAccent),
-              title: _isEditing && editable
-                  ? TextFormField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Enter $label',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter $label';
-                        }
-                        return null;
-                      },
-                    )
-                  : Text(value, style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: AppTheme.gradientStart.withOpacity(0.7),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _isEditing && editable
+                      ? TextFormField(
+                          controller: controller,
+                          decoration: InputDecoration(
+                            hintText: 'Enter $label',
+                            hintStyle: TextStyle(
+                              color:
+                                  colorScheme.onSurfaceVariant.withOpacity(0.5),
+                            ),
+                            isDense: true,
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 8),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppTheme.gradientStart.withOpacity(0.3),
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppTheme.gradientStart,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter $label';
+                            }
+                            return null;
+                          },
+                        )
+                      : Text(
+                          value,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Future<void> _saveProfile() async {
-    // Update userData with new values
     Map<String, dynamic> updateData = {
       'name': _nameController.text,
       'contactNo': _contactController.text,
-      // Need to include email for server identification
       'email': userData['email'],
     };
 
@@ -482,35 +731,34 @@ class _UserProfileState extends ConsumerState<UserProfile> {
         _isLoading = true;
       });
 
-      // 1. Update on server using API
       final response = await ApiService.updateProfile(updateData);
 
       if (response == null || !response.containsKey('message')) {
         throw Exception("Failed to update profile on server");
       }
 
-      // 2. Update local state
       setState(() {
         userData['name'] = _nameController.text;
         userData['contactNo'] = _contactController.text;
       });
 
-      // 3. Update SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userName', _nameController.text);
       await prefs.setString('userPhone', _contactController.text);
 
-      // 4. Update provider state using class method
-      // Call the static method correctly
       await UserNotifier.updateProfile(updateData);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update profile: ${e.toString()}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile: ${e.toString()}')),
+        );
+      }
     } finally {
       setState(() {
         _isLoading = false;

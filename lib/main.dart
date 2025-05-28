@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:mini_books/Screens/Auth/auth_screen.dart';
 import 'package:mini_books/Screens/Auth/simple_auth_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'NavBar/nav_bar.dart';
-import 'Screens/SplashScreen/splash_screen.dart';
 import 'Theme/mytheme.dart';
-import 'providers/auth_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

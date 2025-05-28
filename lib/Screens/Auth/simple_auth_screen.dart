@@ -68,25 +68,41 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
     }
   }
 
-  // Save user data from API response
-  Future<void> _saveUserData(Map<String, dynamic> userData) async {
+ Future<void> _saveUserData(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
 
-    // Make sure to store the ID as a string
-    await prefs.setString('userId', userData['id']?.toString() ?? '');
-    await prefs.setString('userEmail', userData['email'] ?? '');
-    await prefs.setString('userName', userData['name'] ?? '');
-    await prefs.setString('userPhone', userData['contactNo'] ?? '');
-    await prefs.setBool('isPremium', userData['is_premium'] ?? false);
+    try {
+      // Log what we're receiving to help debug
+      print('Saving user data: $userData');
 
-    if (userData['profile_image'] != null) {
-      await prefs.setString('profileImage', userData['profile_image']);
+      await prefs.setBool('isLoggedIn', true);
+
+      // Handle potentially null or different data formats
+      // Use null-safe code with better fallbacks
+      await prefs.setString('userId', userData['id']?.toString() ?? '');
+      await prefs.setString('userEmail', userData['email']?.toString() ?? '');
+      await prefs.setString('userName', userData['name']?.toString() ?? '');
+      await prefs.setString(
+          'userPhone', userData['contactNo']?.toString() ?? '');
+
+      // Use null check before accessing Boolean values
+      final isPremium = userData['is_premium'];
+      await prefs.setBool('isPremium', isPremium is bool ? isPremium : false);
+
+      if (userData['profile_image'] != null) {
+        await prefs.setString(
+            'profileImage', userData['profile_image'].toString());
+      }
+
+      print('User data saved successfully');
+    } catch (e) {
+      print('Error saving user data: $e');
+      // Re-throw to handle in the calling function
+      rethrow;
     }
   }
-
   // Submit form for login or register
-  Future<void> _submit() async {
+Future<void> _submit() async {
     try {
       // Validate form
       if (!_formKey.currentState!.validate()) return;
@@ -112,61 +128,122 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
               'contactNo': _phoneController.text.trim(),
             };
 
-      // Make API call
-      final response = await http.post(
+      print('Request URL: $url');
+      print('Request body: $requestBody');
+
+      // Make API call with better error handling
+      final response = await http
+          .post(
         Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: jsonEncode(requestBody),
+      )
+          .timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception(
+              'Request timeout - Please check your internet connection');
+        },
       );
 
-      // Parse response
-      final responseData = jsonDecode(response.body);
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
+      // Better response handling with proper error checking
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (isLogin) {
-          // Save user data from login response
-          await _saveUserData(responseData['user']);
-        } else {
-          // For registration, we need to log in
-          final loginResponse = await http.post(
-            Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              'email': _emailController.text.trim(),
-              'password': _passwordController.text,
-            }),
-          );
-
-          if (loginResponse.statusCode == 200) {
-            final loginData = jsonDecode(loginResponse.body);
-            await _saveUserData(loginData['user']);
-          } else {
-            throw Exception(
-                'Registration successful but login failed. Please try logging in.');
+        // Safely parse JSON with error handling
+        Map<String, dynamic> responseData;
+        try {
+          responseData = jsonDecode(response.body);
+          if (responseData == null) {
+            throw Exception('Empty response received from server');
           }
+        } catch (e) {
+          throw Exception('Failed to parse server response: $e');
         }
 
-        // Navigate to home screen
-        if (mounted) {
-            // Refresh favorites and collections after login
-          await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
-          await ref.read(bookCollectionsProvider.notifier).refreshCollections();
+        // Check if the user data exists in the response
+        if (responseData.containsKey('user')) {
+          if (isLogin) {
+            // Save user data from login response
+            await _saveUserData(responseData['user']);
+          } else {
+            // For registration, we need to log in
+            final loginResponse = await http
+                .post(
+                  Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                  },
+                  body: jsonEncode({
+                    'email': _emailController.text.trim(),
+                    'password': _passwordController.text,
+                  }),
+                )
+                .timeout(const Duration(seconds: 30));
 
-          
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
-          );
+            print(
+                'Login after registration - Status: ${loginResponse.statusCode}');
+            print('Login after registration - Body: ${loginResponse.body}');
+
+            if (loginResponse.statusCode == 200) {
+              final loginData = jsonDecode(loginResponse.body);
+              if (loginData.containsKey('user')) {
+                await _saveUserData(loginData['user']);
+              } else {
+                throw Exception(
+                    'Invalid login response format after registration');
+              }
+            } else {
+              throw Exception(
+                  'Registration successful but login failed. Please try logging in manually.');
+            }
+          }
+
+          // Use a try-catch block for the operations after successful login
+          try {
+            // Refresh favorites and collections after login
+            if (ref.read(favoriteBooksProvider.notifier) != null) {
+              await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+            }
+            if (ref.read(bookCollectionsProvider.notifier) != null) {
+              await ref
+                  .read(bookCollectionsProvider.notifier)
+                  .refreshCollections();
+            }
+
+            // Navigate to home screen
+            if (mounted) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                    builder: (context) => const FluidNavBarDemo()),
+              );
+            }
+          } catch (e) {
+            print('Error after login: $e');
+            // Don't throw here, we want to continue even if refresh fails
+          }
+        } else {
+          throw Exception('Invalid response format: user data not found');
         }
       } else {
-        // Handle error
-        throw Exception(responseData['error'] ?? 'Authentication failed');
+        // Handle HTTP error codes
+        String errorMessage;
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['error'] ??
+              'Server returned status code ${response.statusCode}';
+        } catch (e) {
+          errorMessage = 'Server returned status code ${response.statusCode}';
+        }
+        throw Exception(errorMessage);
       }
     } catch (error) {
-      // Show error dialog
+      // Show error dialog with more detailed information
       if (mounted) {
         showDialog(
           context: context,
@@ -177,8 +254,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
               TextButton(
                 child: const Text('OK'),
                 onPressed: () {
-                  print(
-                      ".........................................auth error is $error");
+                  print("Auth error is: $error");
                   Navigator.of(ctx).pop();
                 },
               ),
@@ -194,7 +270,6 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
       }
     }
   }
-
   void _switchAuthMode() {
     setState(() {
       isLogin = !isLogin;
@@ -206,7 +281,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final primaryColor = Colors.orange;
+    const primaryColor = Colors.orange;
     final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
@@ -429,7 +504,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                               onPressed: _switchAuthMode,
                               child: Text(
                                 isLogin ? 'Sign Up' : 'Login',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: primaryColor,
                                 ),

@@ -43,7 +43,7 @@ class _RazorpayPageState extends State<RazorpayPage> {
       msg: "Payment successful ${response.paymentId!}",
       toastLength: Toast.LENGTH_SHORT,
     );
-    Navigator.push(context, MaterialPageRoute(builder: (ctx) => FluidNavBarDemo()));
+    Navigator.push(context, MaterialPageRoute(builder: (ctx) => const FluidNavBarDemo()));
   }
 
   void handlePaymentError(PaymentFailureResponse response) {

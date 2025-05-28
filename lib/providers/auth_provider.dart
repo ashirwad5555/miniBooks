@@ -111,7 +111,7 @@ class UserNotifier extends StateNotifier<Map<String, dynamic>> {
         }
       };
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 

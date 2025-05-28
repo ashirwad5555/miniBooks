@@ -20,9 +20,6 @@ class AppTheme {
       surfaceContainerHighest: Color.fromRGBO(245, 245, 245, 1),
       onSurfaceVariant: Color.fromRGBO(69, 70, 79, 1),
 
-      background: Color.fromRGBO(250, 250, 250, 1),
-      onBackground: Color.fromRGBO(28, 27, 31, 1),
-
       error: Color.fromRGBO(179, 38, 30, 1),
       shadow: Color.fromRGBO(0, 0, 0, 0.1),
     ),

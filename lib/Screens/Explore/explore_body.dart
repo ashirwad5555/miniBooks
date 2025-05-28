@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
-import 'package:mini_books/data/books_data.dart';
 import 'package:mini_books/providers/explore_book_provider.dart';
 
 class ExploreBody extends ConsumerWidget {

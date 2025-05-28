@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../BookSummaryPage/book_summary_page.dart';
 
 class BookListModule extends StatelessWidget {
   final List<Map<String, dynamic>> books = [

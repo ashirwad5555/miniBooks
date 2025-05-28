@@ -20,7 +20,7 @@ class _FluidNavBarDemoState extends State {
 
   @override
   void initState() {
-    _child = HomeScreen();
+    _child = const HomeScreen();
     super.initState();
   }
 
@@ -72,16 +72,16 @@ class _FluidNavBarDemoState extends State {
     setState(() {
       switch (index) {
         case 0:
-          _child = ExplorePage();
+          _child = const ExplorePage();
           break;
         case 1:
-          _child = HomeScreen();
+          _child = const HomeScreen();
           break;
         case 2:
           _child = const BookShelfScreen();
           break;
         case 3:
-          _child = UserProfile();
+          _child = const UserProfile();
           break;
       }
       _child = AnimatedSwitcher(

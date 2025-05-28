@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/storage_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteBooksNotifier extends StateNotifier<List<Map<String, dynamic>>> {
   FavoriteBooksNotifier() : super([]) {

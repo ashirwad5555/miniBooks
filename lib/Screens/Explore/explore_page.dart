@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../temp/temp_explorebody.dart';
 import 'explore_body.dart';
 
 class ExplorePage extends StatefulWidget {

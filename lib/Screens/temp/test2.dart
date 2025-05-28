@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
 
 import '../../providers/categorySelector_provider.dart';
-import '../BookSummaryPage/book_summary_page.dart';
 
 class CategoryBooksWidget extends ConsumerWidget {
   const CategoryBooksWidget({super.key});

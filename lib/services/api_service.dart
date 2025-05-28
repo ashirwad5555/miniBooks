@@ -7,7 +7,7 @@ import 'package:mini_books/config/api_config.dart';
 
 class ApiService {
   // Set to false to use actual backend instead of offline mode
-  static bool _useOfflineMode = false;
+  static const bool _useOfflineMode = false;
 
   // In-memory storage for currently logged in user
   static Map<String, dynamic>? _currentUser;
@@ -69,7 +69,7 @@ class ApiService {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email, 'password': password}),
           )
-          .timeout(Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -101,7 +101,7 @@ class ApiService {
   static Future<Map<String, dynamic>> getUserProfile({String? email}) async {
     if (_useOfflineMode) {
       // Offline mode implementation
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // Return current user if logged in
       if (_currentUser != null) {
         return _currentUser!;
@@ -122,7 +122,7 @@ class ApiService {
             Uri.parse(
                 '${ApiConfig.baseUrl}/api/users/profile?email=$userEmail'),
           )
-          .timeout(Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -145,7 +145,7 @@ class ApiService {
       Map<String, dynamic> userData) async {
     if (_useOfflineMode) {
       // Offline mode implementation
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // Update in-memory user data
       _currentUser = {
         ..._currentUser!,
@@ -197,7 +197,7 @@ class ApiService {
       String email, String currentPassword, String newPassword) async {
     if (_useOfflineMode) {
       // Offline mode implementation
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       return {'message': 'Password updated successfully'};
     }
 
@@ -212,7 +212,7 @@ class ApiService {
               'new_password': newPassword,
             }),
           )
-          .timeout(Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10));
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
@@ -232,7 +232,7 @@ class ApiService {
   static Future<Map<String, dynamic>> updateSubscription(bool isPremium) async {
     if (_useOfflineMode) {
       // Offline mode implementation
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       // Update premium status in memory
       _currentUser!['is_premium'] = isPremium;
 
@@ -260,7 +260,7 @@ class ApiService {
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email, 'is_premium': isPremium}),
           )
-          .timeout(Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

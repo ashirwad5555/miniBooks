@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../NavBar/nav_bar.dart';
 
@@ -184,7 +183,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         backgroundColor: Colors.grey.shade300,
                         foregroundColor: Colors.black,
                       ),
-                      child: Text('Back'),
+                      child: const Text('Back'),
                     ),
                   ElevatedButton(
                     onPressed: () {
@@ -195,7 +194,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => FluidNavBarDemo()),
+                              builder: (context) => const FluidNavBarDemo()),
                         );
                       }
                     },
@@ -204,7 +203,7 @@ class _QuestionnaireScreenState extends State<QuestionnaireScreen> {
                       padding:
                           const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     ),
-                    child: Text(_currentStep < 2 ? 'Next' : 'Finish', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),),
+                    child: Text(_currentStep < 2 ? 'Next' : 'Finish', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),),
                   ),
                 ],
               ),

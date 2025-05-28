@@ -62,7 +62,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
         // Get image URL and ensure it's properly formatted
         String? profileImage = prefs.getString('profileImage');
         if (profileImage != null && !profileImage.startsWith('http')) {
-          profileImage = '${ApiConfig.baseUrl}${profileImage}';
+          profileImage = '${ApiConfig.baseUrl}$profileImage';
         }
 
         setState(() {
@@ -150,7 +150,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
           // Make sure the URL is properly formatted with the base URL
           final String fullImageUrl = imageUrl.startsWith('http')
               ? imageUrl
-              : '${ApiConfig.baseUrl}${imageUrl}';
+              : '${ApiConfig.baseUrl}$imageUrl';
 
           setState(() {
             _imageUrl = fullImageUrl;
@@ -366,7 +366,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                 Navigator.of(context)
                                     .push(
                                   MaterialPageRoute(
-                                    builder: (ctx) => SubscriptionPage(),
+                                    builder: (ctx) => const SubscriptionPage(),
                                   ),
                                 )
                                     .then((_) async {
@@ -401,7 +401,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                 onPressed: () {
                                   _logout(context);
                                 },
-                                child: Text("Logout")),
+                                child: const Text("Logout")),
                           ),
                           const SizedBox(height: 100),
                         ],

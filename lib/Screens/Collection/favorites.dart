@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
-import 'package:mini_books/Screens/temp/test_book_sammaryPage.dart';
 
 import '../../providers/favorites_provider.dart';
-import '../BookSummaryPage/book_summary_page.dart';
 
 class FavoriteBooksScreen extends ConsumerWidget {
   const FavoriteBooksScreen({super.key});

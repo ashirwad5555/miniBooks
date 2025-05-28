@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/Screens/Auth/simple_auth_screen.dart';
-import '../Auth/auth_screen.dart';
-import '../../NavBar/nav_bar.dart';
 import '../../providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -77,7 +75,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       } else {
         // Fallback to AuthScreen if callback is not provided
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => SimpleAuthScreen()),
+          MaterialPageRoute(builder: (_) => const SimpleAuthScreen()),
         );
       }
     }

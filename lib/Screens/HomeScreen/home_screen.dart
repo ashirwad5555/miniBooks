@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mini_books/Notifications/notifications.dart';
-import 'package:mini_books/Screens/Collection/saved_books.dart';
 import '../Collection/favorites.dart';
-import 'books_list_module.dart';
 import 'category_books_widget.dart';
-import 'category_selector.dart';
 import 'horizontal_scroll_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -55,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.book_outlined),
             onPressed: () {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => FavoriteBooksScreen()));
+                  .push(MaterialPageRoute(builder: (ctx) => const FavoriteBooksScreen()));
             },
           ),
           IconButton(
@@ -91,9 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
             //   ),
             // ),
             const SizedBox(height: 16),
-            HorizontalScrollWidget(),
+            const HorizontalScrollWidget(),
             const SizedBox(height: 16),
-            CategoryBooksWidget(),
+            const CategoryBooksWidget(),
             const SizedBox(height: 16),
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -1,0 +1,2 @@
+D:/appsFlutter/mini_books/android/app/.cxx/RelWithDebInfo/292i5s22/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/appsFlutter/mini_books/android/app/.cxx/RelWithDebInfo/292i5s22/armeabi-v7a/CMakeFiles/rebuild_cache.dir

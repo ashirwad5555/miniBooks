@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(

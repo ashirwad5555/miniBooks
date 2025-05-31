@@ -35,7 +35,7 @@ class _BookDetailsState extends ConsumerState<BookDetails> {
     final isBookFavorite = favoriteBooks.contains(widget.bookData);
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           widget.bookData['title'] ?? 'Book Details',

@@ -60,27 +60,27 @@ class CategoryBooksWidget extends ConsumerWidget {
                                   .state = category;
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
+                              backgroundColor: WidgetStateProperty.all(
                                 isSelected
                                     ? AppTheme.gradientStart
                                     : Colors.white,
                               ),
-                              foregroundColor: MaterialStateProperty.all(
+                              foregroundColor: WidgetStateProperty.all(
                                 isSelected ? Colors.white : Colors.black87,
                               ),
-                              elevation: MaterialStateProperty.all(
+                              elevation: WidgetStateProperty.all(
                                 isSelected ? 2 : 0,
                               ),
-                              shadowColor: MaterialStateProperty.all(
+                              shadowColor: WidgetStateProperty.all(
                                 isSelected
                                     ? AppTheme.gradientStart.withOpacity(0.4)
                                     : Colors.transparent,
                               ),
-                              padding: MaterialStateProperty.all(
+                              padding: WidgetStateProperty.all(
                                 const EdgeInsets.symmetric(
                                     horizontal: 18, vertical: 0),
                               ),
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                   side: BorderSide(
@@ -92,12 +92,12 @@ class CategoryBooksWidget extends ConsumerWidget {
                                 ),
                               ),
                               overlayColor:
-                                  MaterialStateProperty.resolveWith((states) {
-                                if (states.contains(MaterialState.pressed)) {
+                                  WidgetStateProperty.resolveWith((states) {
+                                if (states.contains(WidgetState.pressed)) {
                                   return AppTheme.gradientStart
                                       .withOpacity(0.1);
                                 }
-                                if (states.contains(MaterialState.hovered)) {
+                                if (states.contains(WidgetState.hovered)) {
                                   return AppTheme.gradientStart
                                       .withOpacity(0.05);
                                 }

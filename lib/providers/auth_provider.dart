@@ -100,6 +100,7 @@ class UserNotifier extends StateNotifier<Map<String, dynamic>> {
       return null;
     }
   }
+
   Future<void> updateSubscription(bool isPremium) async {
     try {
       final response = await ApiService.updateSubscription(isPremium);
@@ -142,6 +143,14 @@ class UserNotifier extends StateNotifier<Map<String, dynamic>> {
       'isAuthenticated': false,
       'userData': {},
       'isLoading': false,
+    };
+  }
+
+  // Add this method to your UserNotifier class
+  void updateUser(Map<String, dynamic> updatedUserData) {
+    state = {
+      ...state,
+      'userData': updatedUserData,
     };
   }
 }

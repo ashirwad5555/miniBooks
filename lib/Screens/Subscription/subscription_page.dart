@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mini_books/Screens/Subscription/InappPurchases/inAppPurchasePage.dart';
 
-import 'GooglePay/paySampleApp.dart';
 
 class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
@@ -69,54 +69,30 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             ),
             const SizedBox(height: 30),
 
-            // Subscription Options
+            // Single Premium Subscription Option
             SubscriptionOption(
-              duration: '1 month',
-              price: 'Rs. 69.99 / month',
-              isActive: selectedPlan == '1 month',
-              onTap: () {
-                setState(() {
-                  selectedPlan = '1 month';
-                });
-              },
-            ),
-            SubscriptionOption(
-              duration: '6 months',
-              price: 'Rs. 419.99 / 6 months',
-              isActive: selectedPlan == '6 months',
-              onTap: () {
-                setState(() {
-                  selectedPlan = '6 months';
-                });
-              },
-            ),
-            SubscriptionOption(
-              duration: '12 months',
-              price: 'Rs. 12,000 / 12 months',
-              discount: '16%',
+              duration: 'Lifetime Premium',
+              price: 'Rs. 1,500',
+              isActive: true,
               isPopular: true,
-              isActive: selectedPlan == '12 months',
               onTap: () {
-                setState(() {
-                  selectedPlan = '12 months';
-                });
+                // No selection needed as there's only one option
               },
             ),
 
             const Spacer(),
 
-            // Start Trial Button
+            // Purchase Button
             ElevatedButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => RazorpayPage(
-                //       Title: "userId",
-                //     ),
-                //   ),
-                // );
-                Navigator.push(context, MaterialPageRoute(builder: (ctx) => const PayMaterialApp()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const InAppPurchasePage(
+                      title: "Premium Subscription",
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
@@ -128,7 +104,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               child: const Padding(
                 padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
                 child: Text(
-                  'Start my free 14 day trial',
+                  'Upgrade to Premium',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white,
@@ -139,9 +115,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             ),
             const SizedBox(height: 10),
 
-            // Cancel anytime message
+            // One-time purchase message
             const Text(
-              'Cancel anytime.',
+              'One-time payment, lifetime access.',
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -160,7 +136,8 @@ class SubscriptionOption extends StatelessWidget {
   final bool isPopular;
   final VoidCallback onTap;
 
-  const SubscriptionOption({super.key, 
+  const SubscriptionOption({
+    super.key,
     required this.duration,
     required this.price,
     this.discount,
@@ -242,7 +219,7 @@ class SubscriptionOption extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
-                  'Most Popular',
+                  'Best Value',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,

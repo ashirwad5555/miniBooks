@@ -28,7 +28,7 @@ class BookShelfScreen extends ConsumerWidget {
           decoration: AppTheme.getGradientDecoration(),
         ),
       ),
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: bookCollections.isEmpty
           ? Center(
               child: Column(

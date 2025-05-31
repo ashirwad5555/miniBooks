@@ -158,9 +158,6 @@ Future<void> _submit() async {
         Map<String, dynamic> responseData;
         try {
           responseData = jsonDecode(response.body);
-          if (responseData == null) {
-            throw Exception('Empty response received from server');
-          }
         } catch (e) {
           throw Exception('Failed to parse server response: $e');
         }
@@ -207,15 +204,11 @@ Future<void> _submit() async {
           // Use a try-catch block for the operations after successful login
           try {
             // Refresh favorites and collections after login
-            if (ref.read(favoriteBooksProvider.notifier) != null) {
-              await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
-            }
-            if (ref.read(bookCollectionsProvider.notifier) != null) {
-              await ref
-                  .read(bookCollectionsProvider.notifier)
-                  .refreshCollections();
-            }
-
+            await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+                      await ref
+                .read(bookCollectionsProvider.notifier)
+                .refreshCollections();
+          
             // Navigate to home screen
             if (mounted) {
               Navigator.of(context).pushReplacement(

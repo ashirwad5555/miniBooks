@@ -35,8 +35,8 @@ class ExploreBody extends ConsumerWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            colorScheme.background,
-            colorScheme.background.withOpacity(0.95),
+            colorScheme.surface,
+            colorScheme.surface.withOpacity(0.95),
           ],
         ),
       ),
@@ -184,7 +184,7 @@ class ExploreBody extends ConsumerWidget {
                         'Book Categories',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.onBackground,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const Spacer(),
@@ -209,7 +209,7 @@ class ExploreBody extends ConsumerWidget {
                         'Search Results',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: colorScheme.onBackground,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const Spacer(),

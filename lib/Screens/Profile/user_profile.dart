@@ -153,8 +153,18 @@ class _UserProfileState extends ConsumerState<UserProfile> {
             userData['profile_image'] = fullImageUrl;
           });
 
+          // Update SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('profileImage', fullImageUrl);
+
+          // Update the global state in user provider - THIS IS THE KEY ADDITION
+          if (ref.read(userProvider)['isAuthenticated']) {
+            Map<String, dynamic> updatedUserData = {...ref.read(userProvider)['userData']  ?? {},
+             'profile_image': fullImageUrl, };
+             // Update the user state using notifier
+            ref.read(userProvider.notifier).updateUser(updatedUserData);
+
+          }
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -322,11 +332,11 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                             ),
                                           ],
                                         ),
-                                        child: CircleAvatar(
+                                        child: const CircleAvatar(
                                           radius: 18,
                                           backgroundColor:
                                               AppTheme.gradientStart,
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.camera_alt,
                                             color: Colors.white,
                                             size: 18,
@@ -622,7 +632,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
         if (_isLoading)
           Container(
             color: Colors.black.withOpacity(0.5),
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(
                 valueColor:
                     AlwaysStoppedAnimation<Color>(AppTheme.gradientStart),
@@ -690,7 +700,7 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                 color: AppTheme.gradientStart.withOpacity(0.3),
                               ),
                             ),
-                            focusedBorder: UnderlineInputBorder(
+                            focusedBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: AppTheme.gradientStart,
                                 width: 2,
@@ -747,6 +757,18 @@ class _UserProfileState extends ConsumerState<UserProfile> {
       await prefs.setString('userPhone', _contactController.text);
 
       await UserNotifier.updateProfile(updateData);
+
+      // Update the global user state - REPLACE the static call with this
+      if (ref.read(userProvider)['isAuthenticated']) {
+        Map<String, dynamic> updatedUserData = {
+          ...ref.read(userProvider)['userData'] ?? {},
+          'name': _nameController.text,
+          'contactNo': _contactController.text,
+        };
+
+        // Update the user state using notifier
+        ref.read(userProvider.notifier).updateUser(updatedUserData);
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

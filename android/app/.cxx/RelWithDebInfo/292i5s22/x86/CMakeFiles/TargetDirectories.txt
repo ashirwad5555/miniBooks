@@ -1,0 +1,2 @@
+D:/appsFlutter/mini_books/android/app/.cxx/RelWithDebInfo/292i5s22/x86/CMakeFiles/edit_cache.dir
+D:/appsFlutter/mini_books/android/app/.cxx/RelWithDebInfo/292i5s22/x86/CMakeFiles/rebuild_cache.dir

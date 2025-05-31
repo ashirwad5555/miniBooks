@@ -4,8 +4,7 @@ import 'package:mini_books/Screens/Collection/bookShelf.dart';
 import 'package:mini_books/Screens/HomeScreen/home_screen.dart';
 import '../Screens/Explore/explore_page.dart';
 import '../Screens/Profile/user_profile.dart';
-import '../Screens/temp/temp_bookShelf.dart';
-
+import '../Theme/mytheme.dart'; // Import the theme
 
 class FluidNavBarDemo extends StatefulWidget {
   const FluidNavBarDemo({super.key});
@@ -37,7 +36,6 @@ class _FluidNavBarDemoState extends State {
         bottomNavigationBar: FluidNavBar(
           animationFactor: 1,
           icons: [
-
             FluidNavBarIcon(
                 icon: Icons.search,
                 backgroundColor: const Color(0xFFEC4134),
@@ -56,7 +54,10 @@ class _FluidNavBarDemoState extends State {
                 extras: {"label": "profile"}),
           ],
           onChange: _handleNavigationChange,
-          style: const FluidNavBarStyle(iconUnselectedForegroundColor: Colors.white, barBackgroundColor: Color.fromRGBO(103, 163, 217, 0.5)),
+          style: FluidNavBarStyle(
+              iconUnselectedForegroundColor: Colors.white,
+              barBackgroundColor: AppTheme.gradientStart
+                  .withOpacity(0.3)), // Changed background color here
           scaleFactor: 1.5,
           defaultIndex: 1,
           itemBuilder: (icon, item) => Semantics(
@@ -64,7 +65,6 @@ class _FluidNavBarDemoState extends State {
             child: item,
           ),
         ),
-
       ),
     );
   }

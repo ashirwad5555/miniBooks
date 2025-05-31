@@ -17,7 +17,7 @@ class _ExplorePageState extends State<ExplorePage> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           'Category',

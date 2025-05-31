@@ -32,11 +32,7 @@ class AppTheme {
       onSurface: Color(0xFF1f1f1f), // Dark gray text
       surfaceContainerHighest: Color(0xFFf8f8f8), // Very light gray
       surfaceContainer: Color(0xFFf5f5f5), // Light gray
-      onSurfaceVariant: Color(0xFF5f5f5f), // Medium gray text
-
-      // Background colors
-      background: Color(0xFFfefbff), // Off-white background
-      onBackground: Color(0xFF1f1f1f), // Dark text
+      onSurfaceVariant: Color(0xFF5f5f5f), // Dark text
 
       // Outline and border colors
       outline: Color(0xFFe0bfb7), // Soft pink outline
@@ -326,11 +322,7 @@ class AppTheme {
       // Surface colors for dark theme
       surface: Color(0xFF1a1a1a), // Dark surface
       onSurface: Color(0xFFe8e8e8), // Light text
-      surfaceContainerHighest: Color(0xFF2a2a2a), // Elevated surface
-
-      // Background
-      background: Color(0xFF121212), // Dark background
-      onBackground: Color(0xFFe8e8e8), // Light text
+      surfaceContainerHighest: Color(0xFF2a2a2a), // Light text
 
       // Error colors
       error: Color(0xFFffb4ab), // Light red for dark

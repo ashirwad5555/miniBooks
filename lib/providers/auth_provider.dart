@@ -103,12 +103,15 @@ class UserNotifier extends StateNotifier<Map<String, dynamic>> {
 
   Future<void> updateSubscription(bool isPremium) async {
     try {
-      final response = await ApiService.updateSubscription(isPremium);
+      final response = await ApiService.updateSubscriptionStatus(
+        state['userData']['email'],
+        isPremium,
+      );
       state = {
         ...state,
         'userData': {
           ...state['userData'],
-          'is_premium': response['is_premium'],
+          'is_premium': isPremium,
         }
       };
     } catch (e) {

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/config/api_config.dart';
 import 'package:mini_books/providers/books_collection_provider.dart';
 import 'package:mini_books/providers/favorites_provider.dart';
+import 'package:mini_books/services/premium_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -68,7 +69,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
     }
   }
 
- Future<void> _saveUserData(Map<String, dynamic> userData) async {
+  Future<void> _saveUserData(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
 
     try {
@@ -94,6 +95,12 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
             'profileImage', userData['profile_image'].toString());
       }
 
+      // Sync subscription status with backend
+      final userEmail = userData['email']?.toString();
+      if (userEmail != null && userEmail.isNotEmpty) {
+        await PremiumService.syncWithBackend(userEmail);
+      }
+
       print('User data saved successfully');
     } catch (e) {
       print('Error saving user data: $e');
@@ -101,8 +108,9 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
       rethrow;
     }
   }
+
   // Submit form for login or register
-Future<void> _submit() async {
+  Future<void> _submit() async {
     try {
       // Validate form
       if (!_formKey.currentState!.validate()) return;
@@ -205,10 +213,10 @@ Future<void> _submit() async {
           try {
             // Refresh favorites and collections after login
             await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
-                      await ref
+            await ref
                 .read(bookCollectionsProvider.notifier)
                 .refreshCollections();
-          
+
             // Navigate to home screen
             if (mounted) {
               Navigator.of(context).pushReplacement(
@@ -263,6 +271,7 @@ Future<void> _submit() async {
       }
     }
   }
+
   void _switchAuthMode() {
     setState(() {
       isLogin = !isLogin;

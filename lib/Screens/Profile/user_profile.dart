@@ -93,7 +93,9 @@ class _UserProfileState extends ConsumerState<UserProfile> {
           });
         } else {
           // Fetch fresh data if not in state
-          final profile = await ApiService.getUserProfile();
+          final prefs = await SharedPreferences.getInstance();
+          final userEmail = prefs.getString('userEmail') ?? '';
+          final profile = await ApiService.getUserProfile(userEmail);
           setState(() {
             userData = profile;
             _imageUrl = profile['profile_image'];

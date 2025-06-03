@@ -56,46 +56,46 @@ class ApiService {
   //   }
   // }
 
-  // Update the login method to ensure the user ID is handled correctly
-  static Future<Map<String, dynamic>> login(
-      String email, String password) async {
-    try {
-      final response = await http
-          .post(
-            Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({'email': email, 'password': password}),
-          )
-          .timeout(const Duration(seconds: 10));
+  // // Update the login method to ensure the user ID is handled correctly
+  // static Future<Map<String, dynamic>> login(
+  //     String email, String password) async {
+  //   try {
+  //     final response = await http
+  //         .post(
+  //           Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
+  //           headers: {'Content-Type': 'application/json'},
+  //           body: jsonEncode({'email': email, 'password': password}),
+  //         )
+  //         .timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+  //     if (response.statusCode == 200) {
+  //       final responseData = jsonDecode(response.body);
 
-        // Extract user data from the response
-        // The response structure may be different than expected
-        final Map<String, dynamic> data =
-            responseData is List ? responseData[0] : responseData;
+  //       // Extract user data from the response
+  //       // The response structure may be different than expected
+  //       final Map<String, dynamic> data =
+  //           responseData is List ? responseData[0] : responseData;
 
-        final Map<String, dynamic> userData = data['user'] ?? {};
+  //       final Map<String, dynamic> userData = data['user'] ?? {};
 
-        // Store user in memory - ensure ID is handled as a string
-        _currentUser = userData;
+  //       // Store user in memory - ensure ID is handled as a string
+  //       _currentUser = userData;
 
-        return data;
-      } else {
-        final data = jsonDecode(response.body);
-        throw Exception(data['error'] ?? 'Login failed');
-      }
-    } catch (e) {
-      if (e is Exception) {
-        rethrow;
-      }
-      throw Exception('Network error: ${e.toString()}');
-    }
-  }
+  //       return data;
+  //     } else {
+  //       final data = jsonDecode(response.body);
+  //       throw Exception(data['error'] ?? 'Login failed');
+  //     }
+  //   } catch (e) {
+  //     if (e is Exception) {
+  //       rethrow;
+  //     }
+  //     throw Exception('Network error: ${e.toString()}');
+  //   }
+  // }
 
   // Get user profile
-  static Future<Map<String, dynamic>> getUserProfile({String? email}) async {
+  static Future<Map<String, dynamic>> getUserProfile(String email) async {
     if (_useOfflineMode) {
       // Offline mode implementation
       await Future.delayed(const Duration(seconds: 1));
@@ -108,8 +108,9 @@ class ApiService {
     }
 
     try {
-      // Use the email parameter if provided, otherwise use the current user's email
-      final String userEmail = email ?? _currentUser?['email'] ?? '';
+      // FIXED: Don't use null-aware operator on a non-nullable parameter
+      final String userEmail =
+          email.isNotEmpty ? email : _currentUser?['email'] ?? '';
       if (userEmail.isEmpty) {
         throw Exception('Email is required to fetch profile');
       }
@@ -144,17 +145,20 @@ class ApiService {
       // Offline mode implementation
       await Future.delayed(const Duration(seconds: 1));
       // Update in-memory user data
-      _currentUser = {
-        ..._currentUser!,
-        ...userData,
-      };
-
-      // Also update in offline database
-      if (_offlineUsers.containsKey(_currentUser!['email'])) {
-        _offlineUsers[_currentUser!['email']] = {
-          ..._offlineUsers[_currentUser!['email']]!,
+      if (_currentUser != null) {
+        // Add null check
+        _currentUser = {
+          ..._currentUser!,
           ...userData,
         };
+
+        // Also update in offline database
+        if (_offlineUsers.containsKey(_currentUser!['email'])) {
+          _offlineUsers[_currentUser!['email']] = {
+            ..._offlineUsers[_currentUser!['email']]!,
+            ...userData,
+          };
+        }
       }
 
       return {'message': 'Profile updated successfully'};
@@ -226,61 +230,30 @@ class ApiService {
   }
 
   // Update subscription status
-  static Future<Map<String, dynamic>> updateSubscription(bool isPremium) async {
-    if (_useOfflineMode) {
-      // Offline mode implementation
-      await Future.delayed(const Duration(seconds: 1));
-      // Update premium status in memory
-      _currentUser!['is_premium'] = isPremium;
-
-      // Update in offline database
-      if (_offlineUsers.containsKey(_currentUser!['email'])) {
-        _offlineUsers[_currentUser!['email']]!['is_premium'] = isPremium;
-      }
-
-      return {
-        'message': 'Subscription updated successfully',
-        'is_premium': isPremium,
-      };
-    }
-
-    // Regular implementation for backend
+  // Update subscription status in the backend
+  static Future<bool> updateSubscriptionStatus(
+      String email, bool isPremium) async {
     try {
-      final email = _currentUser?['email'];
-      if (email == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final response = await http
-          .post(
-            Uri.parse('${ApiConfig.baseUrl}/api/users/subscription'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({'email': email, 'is_premium': isPremium}),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/api/users/subscription'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'is_premium': isPremium,
+        }),
+      );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        // Update current user if available
-        if (_currentUser != null) {
-          _currentUser = {
-            ..._currentUser!,
-            'is_premium': isPremium,
-            'premium_until': data['premium_until'],
-          };
-        }
-
-        return data;
+        return true;
       } else {
-        final data = jsonDecode(response.body);
-        throw Exception(data['error'] ?? 'Failed to update subscription');
+        print('Failed to update subscription: ${response.body}');
+        return false;
       }
     } catch (e) {
-      if (e is Exception) {
-        rethrow;
-      }
-      throw Exception('Network error: ${e.toString()}');
+      print('Error updating subscription: $e');
+      return false;
     }
   }
 

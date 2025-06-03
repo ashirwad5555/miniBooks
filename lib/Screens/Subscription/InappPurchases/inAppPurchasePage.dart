@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:mini_books/NavBar/nav_bar.dart';
 import 'package:mini_books/Services/premium_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InAppPurchasePage extends StatefulWidget {
   const InAppPurchasePage({super.key, required this.title});
@@ -180,7 +181,7 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
       toastLength: Toast.LENGTH_SHORT,
     );
 
-    // Save premium status to local storage (you should implement this)
+    // Save premium status to local storage and update backend
     await _savePremiumStatus();
 
     // Navigate to home screen
@@ -194,11 +195,24 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
   }
 
   Future<void> _savePremiumStatus() async {
-    // Import the premium service
-    // import 'package:mini_books/Services/premium_service.dart';
+    // Get current user email from SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('userEmail');
 
-    // Save the premium status
-    await PremiumService.savePremiumStatus();
+    if (email != null) {
+      // Save premium status locally and update backend
+      await PremiumService.savePremiumStatus(email: email);
+    } else {
+      // Fallback if no email found (should not happen in a proper login flow)
+      Fluttertoast.showToast(
+        msg:
+            "Warning: Unable to update subscription status on server. Please contact support.",
+        toastLength: Toast.LENGTH_LONG,
+      );
+
+      // Still save locally
+      await PremiumService.savePremiumStatus(email: "unknown@example.com");
+    }
   }
 
   void _handleError(IAPError error) {

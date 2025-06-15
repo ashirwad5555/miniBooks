@@ -87,6 +87,15 @@ flutter:
     - assets/images/
     - assets/Book_covers/job__GYaibC5Q_yiDIiaIpheXw_results/
     - assets/Book_covers/job_3Z7LJf0qQ9WcJ93-DgSFlA_results/
+    - assets/Book_covers/job_4wkRAq9-ThywGl9wEMRsXg_results/
+    - assets/Book_covers/job_5819l4ZgTdmr8WzArlMm6g_results/
+    - assets/Book_covers/job_AH9Lu99qS3-NNg1zxlf1KA_results/
+    - assets/Book_covers/job_DKI8YoFxSUaJaqjXmVQy9g_results/
+    - assets/Book_covers/job_GzWXDCIfS6K3sJ34i8U_xg_results/
+    - assets/Book_covers/job_JSCXLfxMRzeWVClm-Ff-8Q_results/
+    - assets/Book_covers/job_Qyyw8_2HQ8S4yHP_rMBqRw_results/
+    - assets/Book_covers/job_Sz30ML9QQUyjQAe2IPq8wQ_results/
+    - assets/Book_covers/job_vYSJjKQ6SES_Zk1KOPM-7w_results/
     - assets/default_google_pay_config.json
 
   # An image asset can refer to one or more resolution-specific "variants", see

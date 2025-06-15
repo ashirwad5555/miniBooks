@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/Screens/BookSummaryPage/BookDetails.dart';
 import 'package:mini_books/Theme/mytheme.dart';
@@ -177,33 +178,8 @@ class CategoryBooksWidget extends ConsumerWidget {
                                         borderRadius:
                                             const BorderRadius.vertical(
                                                 top: Radius.circular(16)),
-                                        child: Image.asset(
-                                          'assets/${book['coverImage']}',
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (BuildContext context,
-                                              Object exception,
-                                              StackTrace? stackTrace) {
-                                            print(
-                                                'Failed to load image: assets/${book['coverImage']}');
-                                            return Image.asset(
-                                              'assets/images/bookPlaceHolder.png',
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                return Container(
-                                                  color: Colors.grey[300],
-                                                  child: Icon(
-                                                    Icons
-                                                        .chrome_reader_mode_outlined,
-                                                    size: 50,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                        ),
+                                        child: buildBookCoverImage(
+                                            book['coverImage']),
                                       ),
                                     ),
                                     // Text information
@@ -252,6 +228,51 @@ class CategoryBooksWidget extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildBookCoverImage(String? coverImagePath) {
+    // Use a default if path is null or empty
+    if (coverImagePath == null || coverImagePath.isEmpty) {
+      return Image.asset(
+        'assets/images/bookPlaceHolder.png',
+        width: double.infinity,
+        fit: BoxFit.cover,
+      );
+    }
+
+    // Try multiple path formats to handle different cases
+    List<String> possiblePaths = [
+      coverImagePath.startsWith('assets/')
+          ? coverImagePath
+          : 'assets/$coverImagePath',
+      'assets/Book_covers/$coverImagePath',
+    ];
+
+    return FutureBuilder<List<bool>>(
+      future: Future.wait(possiblePaths.map((path) =>
+          rootBundle.load(path).then((_) => true).catchError((_) => false))),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          // Find the first valid path
+          for (int i = 0; i < snapshot.data!.length; i++) {
+            if (snapshot.data![i]) {
+              return Image.asset(
+                possiblePaths[i],
+                width: double.infinity,
+                fit: BoxFit.cover,
+              );
+            }
+          }
+        }
+
+        // If no valid paths or still loading, use placeholder
+        return Image.asset(
+          'assets/images/bookPlaceHolder.png',
+          width: double.infinity,
+          fit: BoxFit.cover,
+        );
+      },
     );
   }
 }

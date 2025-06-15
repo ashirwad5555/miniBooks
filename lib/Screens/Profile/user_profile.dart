@@ -611,244 +611,245 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                 ),
                               ),
 
-                              // Referral Code Section
-                              Container(
+                                // Referral Code Section
+                                Container(
                                 margin: const EdgeInsets.only(bottom: 20.0),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
                                   ],
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        'Referral Program',
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                          color: AppTheme.gradientStart,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                    'Referral Program',
+                                    style: theme.textTheme.titleMedium
+                                      ?.copyWith(
+                                      color: AppTheme.gradientStart,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    const Divider(height: 1),
-                                    Container(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Column(
-                                        crossAxisAlignment:
+                                    ),
+                                  ),
+                                  const Divider(height: 1),
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                    crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                      children: [
+                                        Container(
+                                        padding:
+                                          const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.gradientStart
+                                            .withOpacity(0.1),
+                                          borderRadius:
+                                            BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(
+                                          Icons.people_alt,
+                                          color: AppTheme.gradientStart,
+                                          size: 30,
+                                        ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
                                             CrossAxisAlignment.start,
+                                          children: [
+                                          Text(
+                                            'Share Your Referral Code',
+                                            style: theme
+                                              .textTheme.titleMedium
+                                              ?.copyWith(
+                                            fontWeight:
+                                              FontWeight.bold,
+                                            color: colorScheme
+                                              .onSurface,
+                                            ),
+                                          ),
+                                          Text(
+                                            'Invite friends to join Mini Books',
+                                            style: theme
+                                              .textTheme.bodyMedium
+                                              ?.copyWith(
+                                            color: colorScheme
+                                              .onSurfaceVariant,
+                                            ),
+                                          ),
+                                          ],
+                                        ),
+                                        ),
+                                      ],
+                                      ),
+
+                                      const SizedBox(height: 20),
+
+                                      // Referral Code Display
+                                      Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        borderRadius:
+                                          BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.grey[300]!),
+                                      ),
+                                      child: Row(
                                         children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue
-                                                      .withOpacity(0.1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: const Icon(
-                                                  Icons.people_alt,
-                                                  color: Colors.blue,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Share Your Referral Code',
-                                                      style: theme
-                                                          .textTheme.titleMedium
-                                                          ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: colorScheme
-                                                            .onSurface,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      'Invite friends to join Mini Books',
-                                                      style: theme
-                                                          .textTheme.bodyMedium
-                                                          ?.copyWith(
-                                                        color: colorScheme
-                                                            .onSurfaceVariant,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-
-                                          const SizedBox(height: 20),
-
-                                          // Referral Code Display
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 12, horizontal: 16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey[100],
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              border: Border.all(
-                                                  color: Colors.grey[300]!),
+                                        Expanded(
+                                          child: Column(
+                                          crossAxisAlignment:
+                                            CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Text(
+                                            'Your Referral Code',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color:
+                                                Colors.grey[600],
                                             ),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Your Referral Code',
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color:
-                                                              Colors.grey[600],
-                                                        ),
-                                                      ),
-                                                      const SizedBox(height: 4),
-                                                      Text(
-                                                        userData[
-                                                                'referral_code'] ??
-                                                            'LOADING...',
-                                                        style: const TextStyle(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          letterSpacing: 1.5,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  icon: const Icon(Icons.copy),
-                                                  onPressed: () {
-                                                    Clipboard.setData(
-                                                        ClipboardData(
-                                                      text: userData[
-                                                              'referral_code'] ??
-                                                          '',
-                                                    ));
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                            'Referral code copied to clipboard'),
-                                                      ),
-                                                    );
-                                                  },
-                                                  tooltip: 'Copy to clipboard',
-                                                ),
-                                              ],
                                             ),
-                                          ),
-
-                                          const SizedBox(height: 20),
-
-                                          // Referrals Count
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text(
-                                                'People you referred',
-                                                style: theme
-                                                    .textTheme.bodyMedium
-                                                    ?.copyWith(
-                                                  color: colorScheme.onSurface,
-                                                ),
-                                              ),
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 4,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.blue[50],
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  '${userData['referrals_count'] ?? 0}',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.blue[700],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const ReferralsPage()),
-                                              );
-                                            },
-                                            child: const Text(
-                                              'View All Referrals',
-                                              style: TextStyle(
-                                                color: Colors.blue,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                            userData[
+                                                'referral_code'] ??
+                                              'LOADING...',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight:
+                                                FontWeight.bold,
+                                              letterSpacing: 1.5,
                                             ),
-                                          ),
-                                          // Share Button
-                                          SizedBox(
-                                            width: double.infinity,
-                                            child: ElevatedButton.icon(
-                                              icon: const Icon(Icons.share),
-                                              label:
-                                                  const Text("Share Your Code"),
-                                              onPressed: () {
-                                                Share.share(
-                                                  'Join Mini Books using my referral code: ${userData['referral_code']}',
-                                                );
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.blue,
-                                                foregroundColor: Colors.white,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 15),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                elevation: 4,
-                                              ),
                                             ),
+                                          ],
                                           ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.copy),
+                                          onPressed: () {
+                                          Clipboard.setData(
+                                            ClipboardData(
+                                            text: userData[
+                                                'referral_code'] ??
+                                              '',
+                                          ));
+                                          ScaffoldMessenger.of(
+                                              context)
+                                            .showSnackBar(
+                                            const SnackBar(
+                                            content: Text(
+                                              'Referral code copied to clipboard'),
+                                            ),
+                                          );
+                                          },
+                                          tooltip: 'Copy to clipboard',
+                                        ),
                                         ],
                                       ),
+                                      ),
+
+                                      const SizedBox(height: 20),
+
+                                      // Referrals Count
+                                      Row(
+                                      mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                        'People you referred',
+                                        style: theme
+                                          .textTheme.bodyMedium
+                                          ?.copyWith(
+                                          color: colorScheme.onSurface,
+                                        ),
+                                        ),
+                                        Container(
+                                        padding:
+                                          const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppTheme.gradientStart
+                                            .withOpacity(0.1),
+                                          borderRadius:
+                                            BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          '${userData['referrals_count'] ?? 0}',
+                                          style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppTheme.gradientStart,
+                                          ),
+                                        ),
+                                        ),
+                                      ],
+                                      ),
+
+                                      TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                            const ReferralsPage()),
+                                        );
+                                      },
+                                      child: Text(
+                                        'View All Referrals',
+                                        style: TextStyle(
+                                        color: AppTheme.gradientStart,
+                                        fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      ),
+                                      // Share Button
+                                      SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton.icon(
+                                        icon: const Icon(Icons.share),
+                                        label:
+                                          const Text("Share Your Code"),
+                                        onPressed: () {
+                                        Share.share(
+                                          'Join Mini Books using my referral code: ${userData['referral_code']}',
+                                        );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.gradientStart,
+                                        foregroundColor: Colors.white,
+                                        padding:
+                                          const EdgeInsets.symmetric(
+                                            vertical: 15),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                            BorderRadius.circular(10),
+                                        ),
+                                        elevation: 4,
+                                        ),
+                                      ),
+                                      ),
+                                    ],
                                     ),
+                                  ),
                                   ],
                                 ),
-                              ),
+                                ),
 
                               // Logout button
                               Container(

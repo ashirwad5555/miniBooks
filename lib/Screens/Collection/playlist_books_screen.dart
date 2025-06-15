@@ -50,7 +50,7 @@ class PlaylistBooksScreen extends ConsumerWidget {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.65, // Adjusted to make cards taller
+                  childAspectRatio: 0.70, // Slightly adjusted for better fit
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 15,
                 ),
@@ -68,6 +68,8 @@ class PlaylistBooksScreen extends ConsumerWidget {
                     },
                     child: Card(
                       elevation: 4,
+                      margin: const EdgeInsets.all(
+                          0), // Reduce margin to prevent overflow
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -76,8 +78,10 @@ class PlaylistBooksScreen extends ConsumerWidget {
                         children: [
                           // Image section
                           Expanded(
-                            flex: 3,
+                            flex: 5,
                             child: Stack(
+                              fit:
+                                  StackFit.passthrough, // Help prevent overflow
                               children: [
                                 // Book cover
                                 ClipRRect(
@@ -141,29 +145,40 @@ class PlaylistBooksScreen extends ConsumerWidget {
                               ],
                             ),
                           ),
-                          // Text information
-                          Expanded(
-                            flex: 1,
+                          // Text information - optimized to prevent overflow
+                          SizedBox(
+                            height:
+                                46, // Fixed height instead of Expanded to prevent overflow
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                  vertical: 4.0), // Reduced vertical padding
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize
+                                    .min, // Use minimum vertical space
                                 children: [
                                   Text(
                                     book['title'] ?? 'Untitled',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: Colors.black87,
+                                      fontSize:
+                                          13, // Slightly increased from 12
+                                      height: 1.1,
+                                      color: Colors
+                                          .black, // Changed from Colors.black87 to full black for better contrast
+                                      letterSpacing:
+                                          0.1, // Added slight letter spacing for better readability
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 2), // Reduced space
                                   Text(
                                     book['author'] ?? 'Unknown Author',
                                     style: TextStyle(
                                       fontSize: 10,
+                                      height: 1.0, // Compact text
                                       color: Colors.grey[600],
                                     ),
                                     maxLines: 1,

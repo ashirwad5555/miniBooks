@@ -14,7 +14,8 @@ class FavoriteBooksScreen extends ConsumerWidget {
     // Calculate responsive grid parameters based on screen size
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = screenWidth > 600 ? 3 : 2;
-    final childAspectRatio = screenWidth > 600 ? 0.75 : 0.7;
+    final childAspectRatio =
+        screenWidth > 600 ? 0.7 : 0.65; // Adjusted to prevent overflow
 
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +39,7 @@ class FavoriteBooksScreen extends ConsumerWidget {
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: childAspectRatio,
+                  childAspectRatio: childAspectRatio, // Updated aspect ratio
                   crossAxisSpacing: 14,
                   mainAxisSpacing: 14,
                 ),
@@ -83,55 +84,64 @@ class BookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
+      margin: EdgeInsets.zero, // Keep zero margin
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
       ),
+      clipBehavior: Clip
+          .antiAlias, // Add this to ensure nothing overflows the card boundaries
       child: Column(
-        mainAxisSize: MainAxisSize.min, // This helps control the height
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image section with remove button overlay - fixed height
-          SizedBox(
-            height: 110, // Slightly reduced fixed height
+          // Image section - kept as is
+          Expanded(
+            flex: 5,
             child: Stack(
-              fit: StackFit.expand, // Make stack fill the SizedBox
+              fit: StackFit.passthrough,
               children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(8)),
-                  child: SizedBox.expand(
-                    child: Image.asset(
-                      'assets/${book['coverImage']}',
+                Image.asset(
+                  'assets/${book['coverImage']}',
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/images/bookPlaceHolder.png',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'assets/images/bookPlaceHolder.png',
-                          fit: BoxFit.cover,
+                        return Container(
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.chrome_reader_mode_outlined,
+                            size: 50,
+                            color: Colors.grey[600],
+                          ),
                         );
                       },
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                // Add remove button on top-right corner
+                // Favorite button - kept as is
                 Positioned(
-                  top: 4,
-                  right: 4,
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.7),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: onRemove,
-                        customBorder: const CircleBorder(),
+                  top: 0,
+                  right: 0,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: onRemove,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.black45,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(16),
+                            topRight: Radius.circular(16),
+                          ),
+                        ),
                         child: const Icon(
                           Icons.favorite,
                           color: Colors.red,
-                          size: 14,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -140,79 +150,55 @@ class BookCard extends StatelessWidget {
               ],
             ),
           ),
-          // Content section - flexible but constrained
-          Expanded(
+
+          // Modified text section with more compact layout
+          SizedBox(
+            height: 40, // Reduced from 46 to make more room for the button
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 6, 8, 2),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0, vertical: 2.0), // Reduced padding
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Book title
+                  // Title with slightly reduced font size
+                  const SizedBox(height: 2), // Reduced spacing
                   Text(
                     book['title'] ?? 'Unknown Title',
                     style: const TextStyle(
-                      fontSize: 12, // Reduced from 14
                       fontWeight: FontWeight.bold,
+                      fontSize: 12, // Slightly reduced from 13
+                      height: 1.0, // Even more compact
+                      color: Colors.black,
+                      letterSpacing: 0.1,
                     ),
-                    maxLines: 1, // Reduced from 2
+                    maxLines: 1, // Reduced from 2 to 1 to save space
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 3), // Reduced from 4
-
-                  // Author
-                  Text(
-                    'by ${book['author'] ?? 'Unknown Author'}',
-                    style: TextStyle(
-                      fontSize: 10, // Reduced from 12
-                      color: Colors.grey[600],
-                    ),
-                    maxLines: 1, // Reduced from 2
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 3), // Reduced from 2
-
-                  // Category tag
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 1, // Reduced padding
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[100],
-                      borderRadius: BorderRadius.circular(10), // Smaller radius
-                    ),
-                    child: Text(
-                      book['category'] ?? 'Uncategorized',
-                      style: TextStyle(
-                        fontSize: 8, // Reduced from 10
-                        color: Colors.orange[800],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const Spacer(), // Pushes button to bottom
-                ],
+                  const SizedBox(height: 1), // Reduced spacing
+                  // Author with very compact styling
+                  
+                  ],
               ),
             ),
           ),
 
-          // Read Now button - fixed at bottom with consistent height
+          // Read Now button - more compact
           Padding(
-            padding: const EdgeInsets.fromLTRB(6, 2, 6, 6),
+            padding:
+                const EdgeInsets.fromLTRB(6, 0, 6, 4), // Reduced bottom padding
             child: SizedBox(
               width: double.infinity,
-              height: 24, // Slightly increased for better touch target
+              height: 20, // Reduced from 24
               child: ElevatedButton(
                 onPressed: onReadNow,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   foregroundColor: Colors.white,
-                  padding: EdgeInsets.zero, // Remove padding
-                  minimumSize: Size.zero, // Remove minimum size constraints
-                  tapTargetSize:
-                      MaterialTapTargetSize.shrinkWrap, // Tighter hit testing
-                  textStyle: const TextStyle(fontSize: 10),
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  textStyle: const TextStyle(fontSize: 9), // Reduced from 10
                 ),
                 child: const Text('Read Now'),
               ),

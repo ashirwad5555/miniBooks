@@ -1,3 +1,4 @@
+import 'dart:ui'; // For BackdropFilter
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mini_books/config/api_config.dart';
@@ -126,6 +127,9 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
 
   // Submit form for login or register
   Future<void> _submit() async {
+    // Dismiss keyboard immediately for better visual appeal
+    FocusScope.of(context).unfocus();
+
     try {
       // Validate form
       if (!_formKey.currentState!.validate()) return;
@@ -187,11 +191,24 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
 
             // Navigate after successful login
             if (mounted) {
+              // Make sure we stay on the loading screen for at least 1 second for visual feedback
+              // even if the response comes back quickly
+              final authStartTime = DateTime.now();
+              final minimumLoadingDuration = const Duration(seconds: 1);
+
+              // Load user data and prepare for navigation
               await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
               await ref
                   .read(bookCollectionsProvider.notifier)
                   .refreshCollections();
 
+              // Check if we need to wait a bit more for the animation to be visible
+              final elapsedTime = DateTime.now().difference(authStartTime);
+              if (elapsedTime < minimumLoadingDuration) {
+                await Future.delayed(minimumLoadingDuration - elapsedTime);
+              }
+
+              // Now navigate to home screen
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                     builder: (context) => const FluidNavBarDemo()),
@@ -242,6 +259,12 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
 
               // Navigate to home screen
               if (mounted) {
+                // Make sure we stay on the loading screen for at least 1 second for visual feedback
+                // even if the response comes back quickly
+                final authStartTime = DateTime.now();
+                final minimumLoadingDuration = const Duration(seconds: 1);
+
+                // Load user data and prepare for navigation
                 await ref
                     .read(favoriteBooksProvider.notifier)
                     .refreshFavorites();
@@ -249,6 +272,13 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                     .read(bookCollectionsProvider.notifier)
                     .refreshCollections();
 
+                // Check if we need to wait a bit more for the animation to be visible
+                final elapsedTime = DateTime.now().difference(authStartTime);
+                if (elapsedTime < minimumLoadingDuration) {
+                  await Future.delayed(minimumLoadingDuration - elapsedTime);
+                }
+
+                // Now navigate to home screen
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => const FluidNavBarDemo()),
@@ -312,291 +342,384 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    const primaryColor = Colors.orange;
-    final isDarkMode = theme.brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.orange[50],
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // App Icon
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            isLogin
-                                ? Icons.book_outlined
-                                : Icons.app_registration,
-                            size: 40,
-                            color: primaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+      // Keep your existing scaffold properties (background, appBar, etc.)
 
-                        // Title
-                        Text(
-                          isLogin ? 'Welcome Back' : 'Create Account',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
+      body: Stack(
+        children: [
+          // Your existing body with the authentication form
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // App Icon
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          shape: BoxShape.circle,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
+                        child: Icon(
                           isLogin
-                              ? 'Sign in to continue'
-                              : 'Sign up to get started',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
+                              ? Icons.book_outlined
+                              : Icons.app_registration,
+                          size: 40,
+                          color: Colors.orange,
                         ),
-                        const SizedBox(height: 24),
+                      ),
+                      const SizedBox(height: 16),
 
-                        // Form Fields
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          constraints: BoxConstraints(
-                            maxHeight: isLogin ? 180 : 300,
-                          ),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                // Name field (only for signup)
-                                if (!isLogin)
-                                  TextFormField(
-                                    controller: _nameController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Full Name',
-                                      prefixIcon:
-                                          const Icon(Icons.person_outline),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (!isLogin &&
-                                          (value == null || value.isEmpty)) {
-                                        return 'Please enter your name';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                if (!isLogin) const SizedBox(height: 16),
+                      // Title
+                      Text(
+                        isLogin ? 'Welcome Back' : 'Create Account',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isLogin
+                            ? 'Sign in to continue'
+                            : 'Sign up to get started',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
 
-                                // Email field
+                      // Form Fields
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        constraints: BoxConstraints(
+                          maxHeight: isLogin ? 180 : 300,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              // Name field (only for signup)
+                              if (!isLogin)
                                 TextFormField(
-                                  controller: _emailController,
+                                  controller: _nameController,
                                   decoration: InputDecoration(
-                                    labelText: 'Email Address',
+                                    labelText: 'Full Name',
                                     prefixIcon:
-                                        const Icon(Icons.email_outlined),
+                                        const Icon(Icons.person_outline),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  keyboardType: TextInputType.emailAddress,
                                   validator: (value) {
-                                    if (value == null || !value.contains('@')) {
-                                      return 'Invalid email';
+                                    if (!isLogin &&
+                                        (value == null || value.isEmpty)) {
+                                      return 'Please enter your name';
                                     }
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 16),
+                              if (!isLogin) const SizedBox(height: 16),
 
-                                // Phone field (only for signup)
-                                if (!isLogin)
-                                  TextFormField(
-                                    controller: _phoneController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Phone Number',
-                                      hintText: '+91XXXXXXXXXX',
-                                      prefixIcon: const Icon(Icons.phone),
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                    ),
-                                    keyboardType: TextInputType.phone,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your phone number';
-                                      }
-                                      // Regex pattern for country code + 10 digits
-                                      // Allows formats like: +911234567890 or +1234567890
-                                      final RegExp phoneRegex =
-                                          RegExp(r'^\+\d{1,3}\d{10}$');
-                                      if (!phoneRegex.hasMatch(value)) {
-                                        return 'Please enter a valid phone number with country code (+XX) followed by 10 digits';
-                                      }
-                                      return null;
-                                    },
-                                    // Add input formatting to restrict input length and format
-                                    inputFormatters: [
-                                      // Allow only + and digits
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'[\+\d]')),
-                                      // Limit total length to 13 characters (+ and up to 12 digits)
-                                      LengthLimitingTextInputFormatter(13),
-                                    ],
+                              // Email field
+                              TextFormField(
+                                controller: _emailController,
+                                decoration: InputDecoration(
+                                  labelText: 'Email Address',
+                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                if (!isLogin) const SizedBox(height: 16),
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value == null || !value.contains('@')) {
+                                    return 'Invalid email';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
 
-                                // Referral Code field (optional)
-                                if (!isLogin)
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 16),
-                                      TextFormField(
-                                        controller: _referralCodeController,
-                                        decoration: InputDecoration(
-                                          labelText: 'Referral Code (Optional)',
-                                          prefixIcon:
-                                              const Icon(Icons.card_giftcard),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          // Referral code is optional, so no validation needed here
-                                          return null;
-                                        },
-                                      ),
-                                      if (_referralCodeController
-                                              .text.isNotEmpty &&
-                                          _referralCodeController.text.length <
-                                              4)
-                                        const Padding(
-                                          padding: EdgeInsets.only(top: 8.0),
-                                          child: Text(
-                                            'Referral code must be at least 4 characters',
-                                            style: TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 12),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                if (!isLogin) const SizedBox(height: 16),
-
-                                // Password field
+                              // Phone field (only for signup)
+                              if (!isLogin)
                                 TextFormField(
-                                  controller: _passwordController,
+                                  controller: _phoneController,
                                   decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    prefixIcon: const Icon(Icons.lock_outline),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscurePassword
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                        size: 18,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _obscurePassword = !_obscurePassword;
-                                        });
-                                      },
-                                    ),
+                                    labelText: 'Phone Number',
+                                    hintText: '+91XXXXXXXXXX',
+                                    prefixIcon: const Icon(Icons.phone),
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10.0),
                                     ),
                                   ),
-                                  obscureText: _obscurePassword,
+                                  keyboardType: TextInputType.phone,
                                   validator: (value) {
-                                    if (value == null || value.length < 6) {
-                                      return 'Password must be at least 6 characters';
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your phone number';
+                                    }
+                                    // Regex pattern for country code + 10 digits
+                                    // Allows formats like: +911234567890 or +1234567890
+                                    final RegExp phoneRegex =
+                                        RegExp(r'^\+\d{1,3}\d{10}$');
+                                    if (!phoneRegex.hasMatch(value)) {
+                                      return 'Please enter a valid phone number with country code (+XX) followed by 10 digits';
                                     }
                                     return null;
                                   },
+                                  // Add input formatting to restrict input length and format
+                                  inputFormatters: [
+                                    // Allow only + and digits
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[\+\d]')),
+                                    // Limit total length to 13 characters (+ and up to 12 digits)
+                                    LengthLimitingTextInputFormatter(13),
+                                  ],
+                                ),
+                              if (!isLogin) const SizedBox(height: 16),
+
+                              // Referral Code field (optional)
+                              if (!isLogin)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    TextFormField(
+                                      controller: _referralCodeController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Referral Code (Optional)',
+                                        prefixIcon:
+                                            const Icon(Icons.card_giftcard),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      validator: (value) {
+                                        // Referral code is optional, so no validation needed here
+                                        return null;
+                                      },
+                                    ),
+                                    if (_referralCodeController
+                                            .text.isNotEmpty &&
+                                        _referralCodeController.text.length < 4)
+                                      const Padding(
+                                        padding: EdgeInsets.only(top: 8.0),
+                                        child: Text(
+                                          'Referral code must be at least 4 characters',
+                                          style: TextStyle(
+                                              color: Colors.red, fontSize: 12),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              if (!isLogin) const SizedBox(height: 16),
+
+                              // Password field
+                              TextFormField(
+                                controller: _passwordController,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  prefixIcon: const Icon(Icons.lock_outline),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      size: 18,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                obscureText: _obscurePassword,
+                                validator: (value) {
+                                  if (value == null || value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Submit Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 46,
+                        child: ElevatedButton(
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  // Dismiss keyboard when button is pressed
+                                  FocusScope.of(context).unfocus();
+                                  _submit();
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  isLogin ? 'LOGIN' : 'SIGN UP',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Switch between login and signup
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            isLogin
+                                ? "Don't have an account? "
+                                : 'Already have an account? ',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: _switchAuthMode,
+                            child: Text(
+                              isLogin ? 'Sign Up' : 'Login',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Full-screen overlay with the GIF animation when loading
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                // More transparent gradient for a glassy look
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.orange.withOpacity(0.65), // More transparent
+                      Colors.deepOrange.withOpacity(0.60), // More transparent
+                    ],
+                  ),
+                ),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                      sigmaX: 8,
+                      sigmaY: 8), // Increased blur for glassier effect
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // GIF loading animation with larger size
+                        Container(
+                          padding: const EdgeInsets.all(
+                              20), // Increased padding for larger container
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(
+                                30), // Increased border radius
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 30,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Image.asset(
+                            'assets/animations/loading4.gif',
+                            height: 240, // Increased from 180 to 240
+                            width: 240, // Increased from 180 to 240
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        // Status text with glass-like styling
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15),
+                          decoration: BoxDecoration(
+                            color: Colors.white
+                                .withOpacity(0.25), // More transparent
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(
+                                    0.1), // More transparent shadow
+                                blurRadius: 15,
+                                spreadRadius: 0,
+                              ),
+                            ],
+                            // Add a subtle border for more glass-like appearance
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.4),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Text(
+                            isLogin
+                                ? 'Logging in...'
+                                : 'Creating your account...',
+                            style: TextStyle(
+                              color: Colors
+                                  .white, // White text for better contrast
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-
-                        // Submit Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 46,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _submit,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(
-                                    isLogin ? 'LOGIN' : 'SIGN UP',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Switch between login and signup
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              isLogin
-                                  ? "Don't have an account? "
-                                  : 'Already have an account? ',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: _switchAuthMode,
-                              child: Text(
-                                isLogin ? 'Sign Up' : 'Login',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryColor,
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -604,8 +727,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                 ),
               ),
             ),
-          ),
-        ),
+        ],
       ),
     );
   }

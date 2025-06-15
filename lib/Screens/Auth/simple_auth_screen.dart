@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../NavBar/nav_bar.dart';
+import 'package:flutter/services.dart'; // For clipboard
+import 'package:share_plus/share_plus.dart'; // For sharing referral code
 
 class SimpleAuthScreen extends ConsumerStatefulWidget {
   const SimpleAuthScreen({super.key});
@@ -29,6 +31,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _referralCodeController = TextEditingController();
 
   @override
   void initState() {
@@ -41,7 +44,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
     _animationController.forward();
-    _checkIfLoggedIn();
+    // _checkIfLoggedIn();
   }
 
   @override
@@ -51,24 +54,26 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
     _passwordController.dispose();
     _nameController.dispose();
     _phoneController.dispose();
+    _referralCodeController.dispose();
     super.dispose();
   }
 
-  // Check if user is already logged in
-  Future<void> _checkIfLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  // // Check if user is already logged in
+  // Future<void> _checkIfLoggedIn() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    if (isLoggedIn) {
-      // Navigate to home screen if already logged in
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
-        );
-      }
-    }
-  }
+  //   if (isLoggedIn) {
+  //     // Navigate to home screen if already logged in
+  //     if (mounted) {
+  //       Navigator.of(context).pushReplacement(
+  //         MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
+  //       );
+  //     }
+  //   }
+  // }
 
+  // Update _saveUserData in simple_auth_screen.dart to include referral code
   Future<void> _saveUserData(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -85,6 +90,9 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
       await prefs.setString('userName', userData['name']?.toString() ?? '');
       await prefs.setString(
           'userPhone', userData['contactNo']?.toString() ?? '');
+      await prefs.setString(
+          'referralCode', userData['referral_code']?.toString() ?? '');
+      await prefs.setInt('referralsCount', userData['referrals_count'] ?? 0);
 
       // Use null check before accessing Boolean values
       final isPremium = userData['is_premium'];
@@ -106,6 +114,28 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
       print('Error saving user data: $e');
       // Re-throw to handle in the calling function
       rethrow;
+    }
+  }
+
+  // Validate referral code
+  Future<bool> _validateReferralCode(String code) async {
+    if (code.isEmpty) {
+      // Empty code is valid (optional field)
+      return true;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/api/users/validate-referral-code'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'code': code}),
+      );
+
+      final data = jsonDecode(response.body);
+      return data['valid'] ?? false;
+    } catch (e) {
+      print('Error validating referral code: $e');
+      return false;
     }
   }
 
@@ -134,6 +164,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
               'email': _emailController.text.trim(),
               'password': _passwordController.text,
               'contactNo': _phoneController.text.trim(),
+              'referral_code': _referralCodeController.text.trim(),
             };
 
       print('Request URL: $url');
@@ -176,7 +207,14 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
             // Save user data from login response
             await _saveUserData(responseData['user']);
           } else {
-            // For registration, we need to log in
+            // For registration, we now need to handle two cases:
+            // 1. If the response already contains login info (user + token)
+            // 2. If we need to perform a separate login request
+
+            // Save registration user data first (this might contain the referral_code)
+            await _saveUserData(responseData['user']);
+
+            // Then proceed with login for consistency
             final loginResponse = await http
                 .post(
                   Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
@@ -197,8 +235,22 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
 
             if (loginResponse.statusCode == 200) {
               final loginData = jsonDecode(loginResponse.body);
+              // Check for the user data in the correct location in the response
               if (loginData.containsKey('user')) {
-                await _saveUserData(loginData['user']);
+                // Merge the login response with any data from registration (to preserve referral code)
+                Map<String, dynamic> mergedUserData = {
+                  ...responseData['user'],
+                  ...loginData['user']
+                };
+                await _saveUserData(mergedUserData);
+              } else if (loginData.containsKey('data') &&
+                  loginData['data'] is Map) {
+                // Alternative structure - some APIs return data.user
+                Map<String, dynamic> mergedUserData = {
+                  ...responseData['user'],
+                  ...loginData['data']
+                };
+                await _saveUserData(mergedUserData);
               } else {
                 throw Exception(
                     'Invalid login response format after registration');
@@ -227,6 +279,66 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
           } catch (e) {
             print('Error after login: $e');
             // Don't throw here, we want to continue even if refresh fails
+          }
+        } else if (responseData.containsKey('data') &&
+            responseData['data'] is Map) {
+          // Alternative API structure - some APIs nest user data under 'data'
+          if (isLogin) {
+            await _saveUserData(responseData['data']);
+          } else {
+            // Similar handling for registration with alternative structure
+            await _saveUserData(responseData['data']);
+
+            final loginResponse = await http
+                .post(
+                  Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                  },
+                  body: jsonEncode({
+                    'email': _emailController.text.trim(),
+                    'password': _passwordController.text,
+                  }),
+                )
+                .timeout(const Duration(seconds: 30));
+
+            if (loginResponse.statusCode == 200) {
+              final loginData = jsonDecode(loginResponse.body);
+              Map<String, dynamic> userData;
+              if (loginData.containsKey('user')) {
+                userData = loginData['user'];
+              } else if (loginData.containsKey('data')) {
+                userData = loginData['data'];
+              } else {
+                throw Exception(
+                    'Invalid login response format after registration');
+              }
+
+              // Merge data to preserve referral code
+              Map<String, dynamic> mergedUserData = {
+                ...responseData['data'],
+                ...userData
+              };
+              await _saveUserData(mergedUserData);
+            }
+          }
+
+          // Continue with post-login operations
+          try {
+            await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+            await ref
+                .read(bookCollectionsProvider.notifier)
+                .refreshCollections();
+
+            if (mounted) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                    builder: (context) => const FluidNavBarDemo()),
+              );
+            }
+          } catch (e) {
+            print('Error after login: $e');
           }
         } else {
           throw Exception('Invalid response format: user data not found');
@@ -416,6 +528,46 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                                       }
                                       return null;
                                     },
+                                  ),
+                                if (!isLogin) const SizedBox(height: 16),
+
+                                // Referral Code field (optional)
+                                if (!isLogin)
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 16),
+                                      TextFormField(
+                                        controller: _referralCodeController,
+                                        decoration: InputDecoration(
+                                          labelText: 'Referral Code (Optional)',
+                                          prefixIcon:
+                                              const Icon(Icons.card_giftcard),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          // Referral code is optional, so no validation needed here
+                                          return null;
+                                        },
+                                      ),
+                                      if (_referralCodeController
+                                              .text.isNotEmpty &&
+                                          _referralCodeController.text.length <
+                                              4)
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                            'Referral code must be at least 4 characters',
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 12),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 if (!isLogin) const SizedBox(height: 16),
 

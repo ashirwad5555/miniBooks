@@ -8,6 +8,8 @@ from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import json
 import base64
+import random
+import string
 
 # Load environment variables
 load_dotenv()
@@ -52,12 +54,29 @@ def get_user_by_id(user_id):
     return mongo.db.users.find_one({"_id": ObjectId(user_id)})
 
 def create_user(user_data):
+    # Add referral code to user data
+    user_data['referral_code'] = generate_referral_code(user_data.get('name', ''), user_data['email'])
+    user_data['referrals'] = []  # Array to store users who used this referral code
+    user_data['referred_by'] = user_data.get('referred_by', None)  # Store who referred this user
     user_data['created_at'] = datetime.now()
     user_data['updated_at'] = datetime.now()
     user_data['is_premium'] = False
     user_data['premium_until'] = None
     
     result = mongo.db.users.insert_one(user_data)
+    
+    # If this user was referred by someone, add them to that user's referrals list
+    if user_data.get('referred_by'):
+        mongo.db.users.update_one(
+            {"referral_code": user_data['referred_by']},
+            {"$push": {"referrals": {
+                "user_id": str(result.inserted_id),
+                "email": user_data['email'],
+                "name": user_data.get('name', ''),
+                "date": datetime.now()
+            }}}
+        )
+        
     return result.inserted_id
 
 def update_user_profile(user_id, update_data):
@@ -80,6 +99,45 @@ def update_subscription_status(user_id, is_premium, premium_until=None):
         {"$set": update_data}
     )
     return result.modified_count > 0
+
+# Add new function to generate referral codes
+def generate_referral_code(name, email):
+    """Generate a unique referral code for a user"""
+    # Handle empty name or single word name
+    if not name or name.strip() == '':
+        # Use first two letters of email if name is empty
+        name_initials = email.split('@')[0][:2].upper()
+    else:
+        # Get initials from name (first letter of each word)
+        name_parts = [word[0].upper() for word in name.split() if word]
+        
+        # Make sure we have at least one initial
+        if not name_parts:
+            name_initials = name[:2].upper() if len(name) >= 2 else email.split('@')[0][:2].upper()
+        else:
+            name_initials = ''.join(name_parts)
+    
+    # Get first few chars from email (before @)
+    email_part = email.split('@')[0][:2].upper()
+    
+    # Generate random digits
+    random_digits = ''.join(random.choices(string.digits, k=4))
+    
+    # Combine to create referral code
+    referral_code = f"{name_initials}{email_part}{random_digits}"
+    
+    # Make sure code is at least 6 characters
+    if len(referral_code) < 6:
+        extra_digits = ''.join(random.choices(string.digits, k=6 - len(referral_code)))
+        referral_code = f"{referral_code}{extra_digits}"
+    
+    # Check if code already exists and regenerate if needed
+    while mongo.db.users.find_one({"referral_code": referral_code}):
+        random_digits = ''.join(random.choices(string.digits, k=4))
+        referral_code = f"{name_initials}{email_part}{random_digits}"
+    
+    print(f"Generated referral code: {referral_code} for user: {email}")
+    return referral_code
 
 # Routes
 @app.route('/')
@@ -108,13 +166,27 @@ def register():
     if existing_user:
         return jsonify({'error': 'Email already registered'}), 409
     
+    # Validate referral code if provided
+    if 'referral_code' in data and data['referral_code']:
+        referring_user = mongo.db.users.find_one({"referral_code": data['referral_code']})
+        if not referring_user:
+            return jsonify({'error': 'Invalid referral code'}), 400
+        data['referred_by'] = data['referral_code']
+    
     # Hash password
     data['password'] = bcrypt.generate_password_hash(data['password']).decode('utf-8')
     
     # Create user
     user_id = create_user(data)
     
-    return jsonify({'message': 'User registered successfully', 'user_id': str(user_id)}), 201
+    # Get the created user to return the referral code
+    created_user = get_user_by_id(user_id)
+    
+    return jsonify({
+        'message': 'User registered successfully',
+        'user_id': str(user_id),
+        'referral_code': created_user.get('referral_code')
+    }), 201
 
 @app.route('/api/users/login', methods=['POST'])
 def login():
@@ -135,11 +207,13 @@ def login():
         'contactNo': user.get('contactNo', ''),
         'is_premium': user.get('is_premium', False),
         'premium_until': user.get('premium_until'),
-        'profile_image': user.get('profile_image', '')
+        'profile_image': user.get('profile_image', ''),
+        'referral_code': user.get('referral_code', ''),
+        'referrals_count': len(user.get('referrals', [])),
     }
     
     return jsonify({
-    'user': user_data
+        'user': user_data
     }), 200 
 
 @app.route('/api/users/profile', methods=['GET'])
@@ -377,6 +451,43 @@ def update_user_collections():
         return jsonify({'message': 'Collections updated successfully'}), 200
     else:
         return jsonify({'error': 'Failed to update collections'}), 400
+
+# Add endpoint to validate referral codes
+@app.route('/api/users/validate-referral-code', methods=['POST'])
+def validate_referral_code():
+    data = request.get_json()
+    code = data.get('code')
+    
+    if not code:
+        return jsonify({'valid': False, 'error': 'No code provided'}), 400
+    
+    # Check if the code exists
+    user = mongo.db.users.find_one({"referral_code": code})
+    
+    if user:
+        return jsonify({'valid': True}), 200
+    else:
+        return jsonify({'valid': False, 'error': 'Invalid referral code'}), 200
+
+# Add endpoint to get referrals list
+@app.route('/api/users/referrals', methods=['GET'])
+def get_user_referrals():
+    email = request.args.get('email')
+    
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+    
+    user = get_user_by_email(email)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    # Get referrals list with limited data (no need to expose too much)
+    referrals = user.get('referrals', [])
+    
+    return jsonify({
+        'referrals': referrals,
+        'total': len(referrals)
+    }), 200
 
 # Run the app
 if __name__ == '__main__':

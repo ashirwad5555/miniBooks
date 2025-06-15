@@ -800,8 +800,23 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                             ],
                                           ),
 
-                                          const SizedBox(height: 20),
-
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const ReferralsPage()),
+                                              );
+                                            },
+                                            child: const Text(
+                                              'View All Referrals',
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
                                           // Share Button
                                           SizedBox(
                                             width: double.infinity,
@@ -855,23 +870,9 @@ class _UserProfileState extends ConsumerState<UserProfile> {
                                   ),
                                 ),
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ReferralsPage()),
-                                  );
-                                },
-                                child: const Text(
-                                  'View All Referrals',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
+                             const SizedBox(
+                                height: 50,
+                              )
                             ],
                           ),
                         ),

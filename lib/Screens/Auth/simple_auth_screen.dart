@@ -178,65 +178,41 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
 
       // Better response handling with proper error checking
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Safely parse JSON with error handling
-        Map<String, dynamic> responseData;
-        try {
-          responseData = jsonDecode(response.body);
-        } catch (e) {
-          throw Exception('Failed to parse server response: $e');
-        }
-
-        // Print the entire response structure for debugging
-        print('Response structure: $responseData');
+        final responseData = jsonDecode(response.body);
 
         if (isLogin) {
           // Handle login response
           if (responseData.containsKey('user')) {
             await _saveUserData(responseData['user']);
-          } else if (responseData.containsKey('data')) {
-            await _saveUserData(responseData['data']);
+
+            // Navigate after successful login
+            if (mounted) {
+              await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+              await ref
+                  .read(bookCollectionsProvider.notifier)
+                  .refreshCollections();
+
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                    builder: (context) => const FluidNavBarDemo()),
+              );
+            }
           } else {
             throw Exception(
                 'Invalid login response format: user data not found');
           }
-
-          // Navigate to home screen after successful login
-          if (mounted) {
-            await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
-            await ref
-                .read(bookCollectionsProvider.notifier)
-                .refreshCollections();
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
-            );
-          }
         } else {
-          // Handle registration response
-          // For registration, the most important thing is that we got a successful status code
-          // The exact structure may vary, so let's be more flexible
-
-          // First, try to find user data in the registration response
-          Map<String, dynamic>? userData;
-
-          if (responseData.containsKey('user')) {
-            userData = responseData['user'];
-          } else if (responseData.containsKey('data')) {
-            if (responseData['data'] is Map) {
-              userData = Map<String, dynamic>.from(responseData['data']);
-            }
+          // Registration flow
+          // Store the referral code from the registration response
+          String? referralCode;
+          if (responseData.containsKey('referral_code')) {
+            // The API returns referral_code directly in the response
+            referralCode = responseData['referral_code'] as String?;
           }
 
-          // If we got user data from registration, save it
-          if (userData != null) {
-            await _saveUserData(userData);
-          }
-
-          // Now, attempt to login with the newly registered credentials
-          print('Attempting login after registration...');
-
-          final loginUrl = '${ApiConfig.baseUrl}/api/users/login';
+          // Proceed with auto-login
           final loginResponse = await http.post(
-            Uri.parse(loginUrl),
+            Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
@@ -253,31 +229,16 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
           if (loginResponse.statusCode == 200) {
             final loginData = jsonDecode(loginResponse.body);
 
-            // Try to find user data in login response
-            Map<String, dynamic>? loginUserData;
-
             if (loginData.containsKey('user')) {
-              loginUserData = loginData['user'];
-            } else if (loginData.containsKey('data')) {
-              if (loginData['data'] is Map) {
-                loginUserData = Map<String, dynamic>.from(loginData['data']);
-              }
-            }
+              Map<String, dynamic> userData = {...loginData['user']};
 
-            if (loginUserData != null) {
-              // If we had user data from registration and got login data,
-              // merge them to make sure we preserve everything (especially referral_code)
-              if (userData != null) {
-                // Make sure referral_code from registration is preserved
-                if (userData.containsKey('referral_code') &&
-                    userData['referral_code'] != null &&
-                    userData['referral_code'].toString().isNotEmpty) {
-                  loginUserData['referral_code'] = userData['referral_code'];
-                }
+              // If we got a referral code from registration and it's not set in login response,
+              // add it to the userData
+              if (referralCode != null && referralCode.isNotEmpty) {
+                userData['referral_code'] = referralCode;
               }
 
-              // Save the final user data
-              await _saveUserData(loginUserData);
+              await _saveUserData(userData);
 
               // Navigate to home screen
               if (mounted) {
@@ -287,6 +248,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                 await ref
                     .read(bookCollectionsProvider.notifier)
                     .refreshCollections();
+
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => const FluidNavBarDemo()),
@@ -294,11 +256,10 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
               }
             } else {
               throw Exception(
-                  'Login after registration succeeded but no user data found');
+                  'Auto-login after registration failed: user data not found');
             }
           } else {
-            throw Exception(
-                'Registration successful but login failed. Please try logging in manually.');
+            throw Exception('Registration successful but auto-login failed');
           }
         }
       } else {
@@ -307,7 +268,6 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
         try {
           final errorData = jsonDecode(response.body);
           errorMessage = errorData['error'] ??
-              errorData['message'] ??
               'Server returned status code ${response.statusCode}';
         } catch (e) {
           errorMessage = 'Server returned status code ${response.statusCode}';
@@ -315,7 +275,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
         throw Exception(errorMessage);
       }
     } catch (error) {
-      // Show error dialog with more detailed information
+      // Show error dialog
       if (mounted) {
         showDialog(
           context: context,
@@ -326,7 +286,6 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
               TextButton(
                 child: const Text('OK'),
                 onPressed: () {
-                  print("Auth error is: $error");
                   Navigator.of(ctx).pop();
                 },
               ),

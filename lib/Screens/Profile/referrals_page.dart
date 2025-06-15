@@ -32,18 +32,39 @@ class _ReferralsPageState extends State<ReferralsPage> {
       final prefs = await SharedPreferences.getInstance();
       final email = prefs.getString('userEmail') ?? '';
 
+      if (email.isEmpty) {
+        throw Exception('User not logged in');
+      }
+
+      // Log the API call for debugging
+      print('Fetching referrals for email: $email');
+
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/api/users/referrals?email=$email'),
+        headers: {
+          'Accept': 'application/json',
+        },
       );
+
+      print('Referrals API response status: ${response.statusCode}');
+      print('Referrals API response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
         setState(() {
-          _referrals = data['referrals'] ?? [];
+          // The server returns referrals in the 'referrals' field
+          _referrals = List<dynamic>.from(data['referrals'] ?? []);
           _isLoading = false;
         });
       } else {
-        throw Exception('Failed to load referrals');
+        String errorMessage = 'Failed to load referrals';
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['error'] ?? errorMessage;
+        } catch (_) {}
+
+        throw Exception(errorMessage);
       }
     } catch (e) {
       print('Error loading referrals: $e');
@@ -52,7 +73,9 @@ class _ReferralsPageState extends State<ReferralsPage> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load referrals: ${e.toString()}')),
+          SnackBar(
+              content: Text(
+                  'Failed to load referrals: ${e.toString().replaceAll('Exception: ', '')}')),
         );
       }
     }
@@ -109,8 +132,20 @@ class _ReferralsPageState extends State<ReferralsPage> {
       itemCount: _referrals.length,
       itemBuilder: (context, index) {
         final referral = _referrals[index];
-        final date = DateTime.parse(referral['date']);
-        final formattedDate = '${date.day}/${date.month}/${date.year}';
+        DateTime? date;
+
+        // Handle different date formats
+        try {
+          if (referral['date'] != null) {
+            date = DateTime.parse(referral['date']);
+          }
+        } catch (e) {
+          print('Error parsing date: $e');
+        }
+
+        final formattedDate = date != null
+            ? '${date.day}/${date.month}/${date.year}'
+            : 'Unknown date';
 
         return Card(
           elevation: 2,
@@ -123,7 +158,10 @@ class _ReferralsPageState extends State<ReferralsPage> {
             leading: CircleAvatar(
               backgroundColor: AppTheme.gradientStart.withOpacity(0.2),
               child: Text(
-                referral['name']?[0]?.toUpperCase() ?? '?',
+                referral['name'] != null &&
+                        referral['name'].toString().isNotEmpty
+                    ? referral['name'][0].toUpperCase()
+                    : '?',
                 style: TextStyle(
                   color: AppTheme.gradientStart,
                   fontWeight: FontWeight.bold,
@@ -131,7 +169,7 @@ class _ReferralsPageState extends State<ReferralsPage> {
               ),
             ),
             title: Text(
-              referral['name'] ?? 'User',
+              referral['name'] ?? 'Unknown User',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -140,7 +178,7 @@ class _ReferralsPageState extends State<ReferralsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                Text(referral['email'] ?? ''),
+                Text(referral['email'] ?? 'No email'),
                 const SizedBox(height: 4),
                 Text(
                   'Joined: $formattedDate',
@@ -157,4 +195,3 @@ class _ReferralsPageState extends State<ReferralsPage> {
     );
   }
 }
-

@@ -58,21 +58,6 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
     super.dispose();
   }
 
-  // // Check if user is already logged in
-  // Future<void> _checkIfLoggedIn() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
-  //   if (isLoggedIn) {
-  //     // Navigate to home screen if already logged in
-  //     if (mounted) {
-  //       Navigator.of(context).pushReplacement(
-  //         MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
-  //       );
-  //     }
-  //   }
-  // }
-
   // Update _saveUserData in simple_auth_screen.dart to include referral code
   Future<void> _saveUserData(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
@@ -201,147 +186,120 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
           throw Exception('Failed to parse server response: $e');
         }
 
-        // Check if the user data exists in the response
-        if (responseData.containsKey('user')) {
-          if (isLogin) {
-            // Save user data from login response
+        // Print the entire response structure for debugging
+        print('Response structure: $responseData');
+
+        if (isLogin) {
+          // Handle login response
+          if (responseData.containsKey('user')) {
             await _saveUserData(responseData['user']);
+          } else if (responseData.containsKey('data')) {
+            await _saveUserData(responseData['data']);
           } else {
-            // For registration, we now need to handle two cases:
-            // 1. If the response already contains login info (user + token)
-            // 2. If we need to perform a separate login request
+            throw Exception(
+                'Invalid login response format: user data not found');
+          }
 
-            // Save registration user data first (this might contain the referral_code)
-            await _saveUserData(responseData['user']);
+          // Navigate to home screen after successful login
+          if (mounted) {
+            await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
+            await ref
+                .read(bookCollectionsProvider.notifier)
+                .refreshCollections();
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const FluidNavBarDemo()),
+            );
+          }
+        } else {
+          // Handle registration response
+          // For registration, the most important thing is that we got a successful status code
+          // The exact structure may vary, so let's be more flexible
 
-            // Then proceed with login for consistency
-            final loginResponse = await http
-                .post(
-                  Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                  },
-                  body: jsonEncode({
-                    'email': _emailController.text.trim(),
-                    'password': _passwordController.text,
-                  }),
-                )
-                .timeout(const Duration(seconds: 30));
+          // First, try to find user data in the registration response
+          Map<String, dynamic>? userData;
 
-            print(
-                'Login after registration - Status: ${loginResponse.statusCode}');
-            print('Login after registration - Body: ${loginResponse.body}');
+          if (responseData.containsKey('user')) {
+            userData = responseData['user'];
+          } else if (responseData.containsKey('data')) {
+            if (responseData['data'] is Map) {
+              userData = Map<String, dynamic>.from(responseData['data']);
+            }
+          }
 
-            if (loginResponse.statusCode == 200) {
-              final loginData = jsonDecode(loginResponse.body);
-              // Check for the user data in the correct location in the response
-              if (loginData.containsKey('user')) {
-                // Merge the login response with any data from registration (to preserve referral code)
-                Map<String, dynamic> mergedUserData = {
-                  ...responseData['user'],
-                  ...loginData['user']
-                };
-                await _saveUserData(mergedUserData);
-              } else if (loginData.containsKey('data') &&
-                  loginData['data'] is Map) {
-                // Alternative structure - some APIs return data.user
-                Map<String, dynamic> mergedUserData = {
-                  ...responseData['user'],
-                  ...loginData['data']
-                };
-                await _saveUserData(mergedUserData);
-              } else {
-                throw Exception(
-                    'Invalid login response format after registration');
+          // If we got user data from registration, save it
+          if (userData != null) {
+            await _saveUserData(userData);
+          }
+
+          // Now, attempt to login with the newly registered credentials
+          print('Attempting login after registration...');
+
+          final loginUrl = '${ApiConfig.baseUrl}/api/users/login';
+          final loginResponse = await http.post(
+            Uri.parse(loginUrl),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonEncode({
+              'email': _emailController.text.trim(),
+              'password': _passwordController.text,
+            }),
+          );
+
+          print('Login response status: ${loginResponse.statusCode}');
+          print('Login response body: ${loginResponse.body}');
+
+          if (loginResponse.statusCode == 200) {
+            final loginData = jsonDecode(loginResponse.body);
+
+            // Try to find user data in login response
+            Map<String, dynamic>? loginUserData;
+
+            if (loginData.containsKey('user')) {
+              loginUserData = loginData['user'];
+            } else if (loginData.containsKey('data')) {
+              if (loginData['data'] is Map) {
+                loginUserData = Map<String, dynamic>.from(loginData['data']);
+              }
+            }
+
+            if (loginUserData != null) {
+              // If we had user data from registration and got login data,
+              // merge them to make sure we preserve everything (especially referral_code)
+              if (userData != null) {
+                // Make sure referral_code from registration is preserved
+                if (userData.containsKey('referral_code') &&
+                    userData['referral_code'] != null &&
+                    userData['referral_code'].toString().isNotEmpty) {
+                  loginUserData['referral_code'] = userData['referral_code'];
+                }
+              }
+
+              // Save the final user data
+              await _saveUserData(loginUserData);
+
+              // Navigate to home screen
+              if (mounted) {
+                await ref
+                    .read(favoriteBooksProvider.notifier)
+                    .refreshFavorites();
+                await ref
+                    .read(bookCollectionsProvider.notifier)
+                    .refreshCollections();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                      builder: (context) => const FluidNavBarDemo()),
+                );
               }
             } else {
               throw Exception(
-                  'Registration successful but login failed. Please try logging in manually.');
+                  'Login after registration succeeded but no user data found');
             }
-          }
-
-          // Use a try-catch block for the operations after successful login
-          try {
-            // Refresh favorites and collections after login
-            await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
-            await ref
-                .read(bookCollectionsProvider.notifier)
-                .refreshCollections();
-
-            // Navigate to home screen
-            if (mounted) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (context) => const FluidNavBarDemo()),
-              );
-            }
-          } catch (e) {
-            print('Error after login: $e');
-            // Don't throw here, we want to continue even if refresh fails
-          }
-        } else if (responseData.containsKey('data') &&
-            responseData['data'] is Map) {
-          // Alternative API structure - some APIs nest user data under 'data'
-          if (isLogin) {
-            await _saveUserData(responseData['data']);
           } else {
-            // Similar handling for registration with alternative structure
-            await _saveUserData(responseData['data']);
-
-            final loginResponse = await http
-                .post(
-                  Uri.parse('${ApiConfig.baseUrl}/api/users/login'),
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                  },
-                  body: jsonEncode({
-                    'email': _emailController.text.trim(),
-                    'password': _passwordController.text,
-                  }),
-                )
-                .timeout(const Duration(seconds: 30));
-
-            if (loginResponse.statusCode == 200) {
-              final loginData = jsonDecode(loginResponse.body);
-              Map<String, dynamic> userData;
-              if (loginData.containsKey('user')) {
-                userData = loginData['user'];
-              } else if (loginData.containsKey('data')) {
-                userData = loginData['data'];
-              } else {
-                throw Exception(
-                    'Invalid login response format after registration');
-              }
-
-              // Merge data to preserve referral code
-              Map<String, dynamic> mergedUserData = {
-                ...responseData['data'],
-                ...userData
-              };
-              await _saveUserData(mergedUserData);
-            }
+            throw Exception(
+                'Registration successful but login failed. Please try logging in manually.');
           }
-
-          // Continue with post-login operations
-          try {
-            await ref.read(favoriteBooksProvider.notifier).refreshFavorites();
-            await ref
-                .read(bookCollectionsProvider.notifier)
-                .refreshCollections();
-
-            if (mounted) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (context) => const FluidNavBarDemo()),
-              );
-            }
-          } catch (e) {
-            print('Error after login: $e');
-          }
-        } else {
-          throw Exception('Invalid response format: user data not found');
         }
       } else {
         // Handle HTTP error codes
@@ -349,6 +307,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
         try {
           final errorData = jsonDecode(response.body);
           errorMessage = errorData['error'] ??
+              errorData['message'] ??
               'Server returned status code ${response.statusCode}';
         } catch (e) {
           errorMessage = 'Server returned status code ${response.statusCode}';

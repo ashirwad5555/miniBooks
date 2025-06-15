@@ -431,21 +431,35 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                                     controller: _phoneController,
                                     decoration: InputDecoration(
                                       labelText: 'Phone Number',
-                                      prefixIcon:
-                                          const Icon(Icons.phone_outlined),
+                                      hintText: '+91XXXXXXXXXX',
+                                      prefixIcon: const Icon(Icons.phone),
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
                                       ),
                                     ),
                                     keyboardType: TextInputType.phone,
                                     validator: (value) {
-                                      if (!isLogin &&
-                                          (value == null ||
-                                              value.length < 10)) {
-                                        return 'Invalid phone number';
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your phone number';
+                                      }
+                                      // Regex pattern for country code + 10 digits
+                                      // Allows formats like: +911234567890 or +1234567890
+                                      final RegExp phoneRegex =
+                                          RegExp(r'^\+\d{1,3}\d{10}$');
+                                      if (!phoneRegex.hasMatch(value)) {
+                                        return 'Please enter a valid phone number with country code (+XX) followed by 10 digits';
                                       }
                                       return null;
                                     },
+                                    // Add input formatting to restrict input length and format
+                                    inputFormatters: [
+                                      // Allow only + and digits
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[\+\d]')),
+                                      // Limit total length to 13 characters (+ and up to 12 digits)
+                                      LengthLimitingTextInputFormatter(13),
+                                    ],
                                   ),
                                 if (!isLogin) const SizedBox(height: 16),
 

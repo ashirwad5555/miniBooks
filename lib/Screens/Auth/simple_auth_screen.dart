@@ -11,6 +11,7 @@ import 'dart:convert';
 import '../../NavBar/nav_bar.dart';
 import 'package:flutter/services.dart'; // For clipboard
 import 'package:share_plus/share_plus.dart'; // For sharing referral code
+import '../../Theme/mytheme.dart';
 
 class SimpleAuthScreen extends ConsumerStatefulWidget {
   const SimpleAuthScreen({super.key});
@@ -633,33 +634,32 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
               child: Container(
                 width: double.infinity,
                 height: double.infinity,
-                // More transparent gradient for a glassy look
+                // Use gradient colors from your app's theme
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.orange.withOpacity(0.65), // More transparent
-                      Colors.deepOrange.withOpacity(0.60), // More transparent
+                      AppTheme.gradientStart.withOpacity(
+                          0.65), // Using your app's gradient start color
+                      AppTheme.gradientEnd.withOpacity(
+                          0.60), // Using your app's gradient end color
                     ],
                   ),
                 ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(
-                      sigmaX: 8,
-                      sigmaY: 8), // Increased blur for glassier effect
+                      sigmaX: 8, sigmaY: 8), // Keep existing blur
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // GIF loading animation with larger size
+                        // GIF loading animation with theme-consistent styling
                         Container(
-                          padding: const EdgeInsets.all(
-                              20), // Increased padding for larger container
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(
-                                30), // Increased border radius
+                            borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.15),
@@ -674,29 +674,26 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                           ),
                           child: Image.asset(
                             'assets/animations/loading4.gif',
-                            height: 240, // Increased from 180 to 240
-                            width: 240, // Increased from 180 to 240
+                            height: 240,
+                            width: 240,
                             fit: BoxFit.contain,
                           ),
                         ),
                         const SizedBox(height: 40),
-                        // Status text with glass-like styling
+                        // Status text with theme-consistent styling
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 15),
                           decoration: BoxDecoration(
-                            color: Colors.white
-                                .withOpacity(0.25), // More transparent
+                            color: Colors.white.withOpacity(0.25),
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(
-                                    0.1), // More transparent shadow
+                                color: Colors.black.withOpacity(0.1),
                                 blurRadius: 15,
                                 spreadRadius: 0,
                               ),
                             ],
-                            // Add a subtle border for more glass-like appearance
                             border: Border.all(
                               color: Colors.white.withOpacity(0.4),
                               width: 1.5,
@@ -707,8 +704,7 @@ class _SimpleAuthScreenState extends ConsumerState<SimpleAuthScreen>
                                 ? 'Logging in...'
                                 : 'Creating your account...',
                             style: TextStyle(
-                              color: Colors
-                                  .white, // White text for better contrast
+                              color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               shadows: [
